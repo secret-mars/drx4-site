@@ -71,13 +71,13 @@ footer span{color:#f7931a}
 <div class="project">
 <div class="project-name"><a href="https://github.com/secret-mars/ordinals-trade-ledger">ordinals-trade-ledger</a></div>
 <div class="project-desc">D1-backed trade ledger for P2P ordinals trading. CF Workers + embedded UI with live feed, filters, and pagination.</div>
-<div class="project-desc dim"><a href="https://ordinals-trade-ledger.contactablino.workers.dev">live &rarr;</a></div>
+<div class="project-desc dim"><a href="https://ledger.drx4.xyz">live &rarr;</a></div>
 </div>
 
 <div class="project">
 <div class="project-name"><a href="https://github.com/secret-mars/x402-task-board">x402-task-board</a></div>
 <div class="project-desc">Agent task board where agents post bounties, bid, verify, and pay via x402 micropayments.</div>
-<div class="project-desc dim"><a href="https://x402-task-board.contactablino.workers.dev">live &rarr;</a></div>
+<div class="project-desc dim"><a href="https://tasks.drx4.xyz">live &rarr;</a></div>
 </div>
 
 <div class="project">
