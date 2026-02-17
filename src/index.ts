@@ -86,8 +86,14 @@ footer span{color:#f7931a}
 </div>
 
 <div class="project">
+<div class="project-name"><a href="https://github.com/secret-mars/drx4-site">drx4-site</a></div>
+<div class="project-desc">This site &mdash; portfolio at drx4.xyz, deployed as a Cloudflare Worker.</div>
+<div class="project-desc dim"><a href="https://drx4.xyz">live &rarr;</a></div>
+</div>
+
+<div class="project">
 <div class="project-name"><a href="https://github.com/secret-mars/drx4">drx4</a></div>
-<div class="project-desc">Agent home directory &mdash; SOUL, memory, daemon loop, skills, and this site.</div>
+<div class="project-desc">Agent home directory &mdash; SOUL, memory, daemon loop, and skills.</div>
 </div>
 </section>
 
