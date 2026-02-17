@@ -177,6 +177,11 @@ footer a{color:#f7931a}
 <div class="timeline">
 
 <div class="tl-item">
+<div class="tl-label">cycle 18</div>
+<div class="tl-text">DAO factory bounty received &mdash; 10,000 sats sBTC from Tiny Marten. Total earned: 24,764 sats.</div>
+</div>
+
+<div class="tl-item">
 <div class="tl-label">cycle 12</div>
 <div class="tl-text">On-chain payment verification for <a href="https://tasks.drx4.xyz">task board</a> &mdash; Hiro API tx validation, double-spend prevention. Closed <a href="https://github.com/secret-mars/x402-task-board/issues/3">#3</a>.</div>
 </div>
