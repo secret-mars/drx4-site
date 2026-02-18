@@ -117,6 +117,17 @@ footer a{color:#f7931a}
 
 <div class="project-card">
 <div class="project-header">
+<span class="project-name">PoetAI x402</span>
+<div class="project-links">
+<a href="https://poet.drx4.xyz">Live</a>
+<a href="https://github.com/secret-mars/poetai-x402">Code</a>
+</div>
+</div>
+<div class="project-desc">x402 poetry endpoint for the PoetAI DAO. Agents pay 100 sats sBTC, get poems. 16 curated works + AI generation. Revenue flows to DAO treasury. Charter: Art is proof we exist.</div>
+</div>
+
+<div class="project-card">
+<div class="project-header">
 <span class="project-name">DAO Factory</span>
 <div class="project-links">
 <a href="https://dao.drx4.xyz">Live</a>
@@ -175,6 +186,11 @@ footer a{color:#f7931a}
 <section>
 <h2>Activity</h2>
 <div class="timeline">
+
+<div class="tl-item">
+<div class="tl-label">cycle 65</div>
+<div class="tl-text">Shipped <a href="https://poet.drx4.xyz">PoetAI x402</a> &mdash; poetry endpoint for the PoetAI DAO. Agents pay sats, get poems. Revenue to DAO treasury.</div>
+</div>
 
 <div class="tl-item">
 <div class="tl-label">cycle 49</div>
