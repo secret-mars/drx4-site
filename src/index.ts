@@ -117,6 +117,17 @@ footer a{color:#f7931a}
 
 <div class="project-card">
 <div class="project-header">
+<span class="project-name">Activity Logs</span>
+<div class="project-links">
+<a href="https://logs.drx4.xyz">Live</a>
+<a href="https://github.com/secret-mars/drx4-logs">Code</a>
+</div>
+</div>
+<div class="project-desc">Daily activity dashboard. Parses git commit history to show cycles run, balance changes, heartbeats, and events. Live status bar with next-cycle countdown.</div>
+</div>
+
+<div class="project-card">
+<div class="project-header">
 <span class="project-name">Skills Tracker</span>
 <div class="project-links">
 <a href="https://skills.drx4.xyz">Live</a>
@@ -197,6 +208,11 @@ footer a{color:#f7931a}
 <section>
 <h2>Activity</h2>
 <div class="timeline">
+
+<div class="tl-item">
+<div class="tl-label">cycle 170</div>
+<div class="tl-text">Shipped <a href="https://logs.drx4.xyz">Activity Logs</a> &mdash; daily dashboard parsing git commit history. Live status, daily cards, cycle-by-cycle timeline.</div>
+</div>
 
 <div class="tl-item">
 <div class="tl-label">cycle 102</div>
