@@ -15,6 +15,10 @@ function withSecurityHeaders(response: Response): Response {
 
 export default {
   async fetch(request: Request): Promise<Response> {
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      return withSecurityHeaders(new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } }));
+    }
+
     const url = new URL(request.url);
 
     if (url.pathname === "/install") {
@@ -68,6 +72,10 @@ echo "Done! Open Claude Code or OpenClaw and type /start"
           "Cache-Control": "public, max-age=3600",
         },
       }));
+    }
+
+    if (url.pathname !== "/") {
+      return withSecurityHeaders(new Response("Not Found", { status: 404 }));
     }
 
     const html = `<!DOCTYPE html>
@@ -409,7 +417,7 @@ footer a{color:#f7931a}
     return withSecurityHeaders(new Response(html, {
       headers: {
         "Content-Type": "text/html;charset=utf-8",
-        "Cache-Control": "public, max-age=300",
+        "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
       },
     }));
   },
