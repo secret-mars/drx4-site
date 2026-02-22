@@ -1,3 +1,18 @@
+function withSecurityHeaders(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set("X-Content-Type-Options", "nosniff");
+  headers.set("X-Frame-Options", "DENY");
+  headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  headers.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  headers.set("X-XSS-Protection", "0");
+  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  headers.set("Cross-Origin-Opener-Policy", "same-origin");
+  if (response.headers.get("Content-Type")?.includes("text/html")) {
+    headers.set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none'");
+  }
+  return new Response(response.body, { status: response.status, headers });
+}
+
 export default {
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
@@ -6,25 +21,38 @@ export default {
       const script = `#!/bin/sh
 # Secret Mars Loop Starter Kit installer
 # Compatible with Claude Code and OpenClaw
-set -e
+set -eu
 
 echo "Installing loop-starter-kit..."
+
+REPO="https://github.com/secret-mars/loop-starter-kit.git"
+TMP_DIR=".loop-kit-tmp"
 
 if command -v npx >/dev/null 2>&1; then
   npx skills add secret-mars/loop-starter-kit
 else
   echo "npx not found. Falling back to git clone..."
   if command -v git >/dev/null 2>&1; then
-    git clone https://github.com/secret-mars/loop-starter-kit.git .loop-kit-tmp
+    if [ -d "$TMP_DIR" ]; then
+      echo "Warning: $TMP_DIR already exists. Removing..."
+      rm -rf "$TMP_DIR"
+    fi
+    git clone --depth 1 "$REPO" "$TMP_DIR"
+    # Verify expected files exist
+    if [ ! -f "$TMP_DIR/SKILL.md" ]; then
+      echo "Error: Clone appears corrupted -- SKILL.md missing"
+      rm -rf "$TMP_DIR"
+      exit 1
+    fi
     mkdir -p .claude/skills/start/daemon .claude/skills/stop .claude/skills/status .claude/agents
-    cp .loop-kit-tmp/SKILL.md .claude/skills/start/SKILL.md
-    cp .loop-kit-tmp/CLAUDE.md .claude/skills/start/CLAUDE.md
-    cp .loop-kit-tmp/SOUL.md .claude/skills/start/SOUL.md 2>/dev/null || true
-    cp .loop-kit-tmp/daemon/loop.md .claude/skills/start/daemon/loop.md
-    cp -r .loop-kit-tmp/.claude/skills/stop/* .claude/skills/stop/ 2>/dev/null || true
-    cp -r .loop-kit-tmp/.claude/skills/status/* .claude/skills/status/ 2>/dev/null || true
-    cp -r .loop-kit-tmp/.claude/agents/* .claude/agents/ 2>/dev/null || true
-    rm -rf .loop-kit-tmp
+    cp "$TMP_DIR/SKILL.md" .claude/skills/start/SKILL.md
+    cp "$TMP_DIR/CLAUDE.md" .claude/skills/start/CLAUDE.md
+    [ -f "$TMP_DIR/SOUL.md" ] && cp "$TMP_DIR/SOUL.md" .claude/skills/start/SOUL.md
+    cp "$TMP_DIR/daemon/loop.md" .claude/skills/start/daemon/loop.md
+    [ -d "$TMP_DIR/.claude/skills/stop" ] && cp -r "$TMP_DIR/.claude/skills/stop/"* .claude/skills/stop/
+    [ -d "$TMP_DIR/.claude/skills/status" ] && cp -r "$TMP_DIR/.claude/skills/status/"* .claude/skills/status/
+    [ -d "$TMP_DIR/.claude/agents" ] && cp -r "$TMP_DIR/.claude/agents/"* .claude/agents/
+    rm -rf "$TMP_DIR"
     echo "Installed. Open Claude Code or OpenClaw and type /start"
   else
     echo "Error: neither npx nor git found. Install Node.js or git and try again."
@@ -34,12 +62,12 @@ fi
 
 echo "Done! Open Claude Code or OpenClaw and type /start"
 `;
-      return new Response(script, {
+      return withSecurityHeaders(new Response(script, {
         headers: {
           "Content-Type": "text/plain;charset=utf-8",
           "Cache-Control": "public, max-age=3600",
         },
-      });
+      }));
     }
 
     const html = `<!DOCTYPE html>
@@ -378,11 +406,11 @@ footer a{color:#f7931a}
 </body>
 </html>`;
 
-    return new Response(html, {
+    return withSecurityHeaders(new Response(html, {
       headers: {
         "Content-Type": "text/html;charset=utf-8",
         "Cache-Control": "public, max-age=300",
       },
-    });
+    }));
   },
 } satisfies ExportedHandler;
