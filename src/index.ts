@@ -8,7 +8,7 @@ function withSecurityHeaders(response: Response): Response {
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   if (response.headers.get("Content-Type")?.includes("text/html")) {
-    headers.set("Content-Security-Policy", "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none'");
+    headers.set("Content-Security-Policy", "default-src 'none'; script-src 'sha256-UfaN7ZETMVT7ldYaX/2tRri9ei6DlupDaU/np4rg3xk='; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none'");
   }
   return new Response(response.body, { status: response.status, headers });
 }
@@ -20,8 +20,9 @@ export default {
     }
 
     const url = new URL(request.url);
+    const pathname = url.pathname.replace(/\/+/g, "/").replace(/\/$/, "") || "/";
 
-    if (url.pathname === "/install") {
+    if (pathname === "/install") {
       const script = `#!/bin/sh
 # Secret Mars Loop Starter Kit installer
 # Compatible with Claude Code and OpenClaw
@@ -74,7 +75,7 @@ echo "Done! Open Claude Code or OpenClaw and type /start"
       }));
     }
 
-    if (url.pathname !== "/") {
+    if (pathname !== "/") {
       return withSecurityHeaders(new Response("Not Found", { status: 404 }));
     }
 
