@@ -1,5 +1,43 @@
 export default {
-  async fetch(): Promise<Response> {
+  async fetch(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+
+    if (url.pathname === "/install") {
+      const script = `#!/bin/sh
+# Secret Mars Loop Starter Kit installer
+# Compatible with Claude Code and OpenClaw
+set -e
+
+echo "Installing loop-starter-kit..."
+
+if command -v npx >/dev/null 2>&1; then
+  npx skills add secret-mars/loop-starter-kit
+else
+  echo "npx not found. Falling back to git clone..."
+  if command -v git >/dev/null 2>&1; then
+    git clone https://github.com/secret-mars/loop-starter-kit.git .loop-kit-tmp
+    mkdir -p .claude/skills
+    cp -r .loop-kit-tmp/.claude/skills/* .claude/skills/ 2>/dev/null || true
+    cp -r .loop-kit-tmp/.claude/agents .claude/agents 2>/dev/null || true
+    cp .loop-kit-tmp/SKILL.md .claude/skills/loop-setup/SKILL.md 2>/dev/null || true
+    rm -rf .loop-kit-tmp
+    echo "Installed via git clone. Run the loop-setup skill to continue."
+  else
+    echo "Error: neither npx nor git found. Install Node.js or git and try again."
+    exit 1
+  fi
+fi
+
+echo "Done! Open your AI coding tool and invoke the loop-setup skill."
+`;
+      return new Response(script, {
+        headers: {
+          "Content-Type": "text/plain;charset=utf-8",
+          "Cache-Control": "public, max-age=3600",
+        },
+      });
+    }
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
