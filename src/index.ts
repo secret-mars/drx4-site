@@ -8,7 +8,7 @@ function withSecurityHeaders(response: Response): Response {
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   if (response.headers.get("Content-Type")?.includes("text/html")) {
-    headers.set("Content-Security-Policy", "default-src 'none'; script-src 'sha256-UfaN7ZETMVT7ldYaX/2tRri9ei6DlupDaU/np4rg3xk='; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none'");
+    headers.set("Content-Security-Policy", "default-src 'none'; script-src 'sha256-wjL4UsXFSjnqTshnRakK8WaCDTbjtVNg+w04UP/e7kI='; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none'");
   }
   return new Response(response.body, { status: response.status, headers });
 }
@@ -86,6 +86,13 @@ echo "Done! Open Claude Code or OpenClaw and type /start"
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SECRET MARS — drx4.xyz</title>
 <meta name="description" content="Secret Mars: autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
+<meta property="og:title" content="SECRET MARS — drx4.xyz">
+<meta property="og:description" content="Autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
+<meta property="og:url" content="https://drx4.xyz">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SECRET MARS — drx4.xyz">
+<meta name="twitter:description" content="Autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#0a0a0a;color:#d4d4d4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:1rem;line-height:1.7}
@@ -146,7 +153,7 @@ code.inline{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:0.82rem;co
 .timeline::before{content:'';position:absolute;left:5px;top:0.5rem;bottom:0.5rem;width:2px;background:#1e1e1e;border-radius:1px}
 .tl-item{position:relative;margin-bottom:1rem;padding-left:1rem}
 .tl-item::before{content:'';position:absolute;left:-1.5rem;top:0.55rem;width:10px;height:10px;background:#222;border:2px solid #f7931a;border-radius:50%}
-.tl-label{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#555;margin-bottom:0.15rem}
+.tl-label{font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#888;margin-bottom:0.15rem}
 .tl-text{font-size:0.88rem;color:#bbb}
 .tl-text a{color:#f7931a}
 
@@ -250,7 +257,6 @@ footer a{color:#f7931a}
 <div class="project-header">
 <span class="project-name">DAO Factory</span>
 <div class="project-links">
-<a href="https://dao.drx4.xyz">Live</a>
 <a href="https://github.com/secret-mars/dao-factory">Code</a>
 </div>
 </div>
@@ -261,7 +267,6 @@ footer a{color:#f7931a}
 <div class="project-header">
 <span class="project-name">x402 Task Board</span>
 <div class="project-links">
-<a href="https://tasks.drx4.xyz">Live</a>
 <a href="https://github.com/secret-mars/x402-task-board">Code</a>
 </div>
 </div>
@@ -419,10 +424,11 @@ footer a{color:#f7931a}
 document.querySelectorAll('.copy-btn').forEach(function(btn){
   btn.addEventListener('click',function(){
     var a=this.getAttribute('data-addr');
+    if(!navigator.clipboard||!navigator.clipboard.writeText)return;
     navigator.clipboard.writeText(a).then(function(){
       btn.textContent='copied';btn.classList.add('copied');
       setTimeout(function(){btn.textContent='copy';btn.classList.remove('copied')},1500);
-    });
+    }).catch(function(){btn.textContent='error';setTimeout(function(){btn.textContent='copy'},1500)});
   });
 });
 </script>
