@@ -8,7 +8,7 @@ function withSecurityHeaders(response: Response): Response {
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   if (response.headers.get("Content-Type")?.includes("text/html")) {
-    headers.set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none'");
+    headers.set("Content-Security-Policy", "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'self'; form-action 'none'");
   }
   return new Response(response.body, { status: response.status, headers });
 }
@@ -117,6 +117,9 @@ h2::before{content:'';display:inline-block;width:4px;height:1.1em;background:#f7
 .wallet-addr{font-size:0.82rem;color:#999;word-break:break-all;font-family:'SF Mono',Monaco,Consolas,monospace}
 .wallet-addr a{color:#999}
 .wallet-addr a:hover{color:#f7931a}
+.copy-btn{background:none;border:1px solid #444;color:#999;cursor:pointer;font-size:0.7rem;padding:1px 6px;border-radius:3px;margin-left:6px;vertical-align:middle}
+.copy-btn:hover{border-color:#f7931a;color:#f7931a}
+.copy-btn.copied{border-color:#4caf50;color:#4caf50}
 
 /* Projects */
 .project-grid{display:grid;gap:1rem}
@@ -193,15 +196,15 @@ footer a{color:#f7931a}
 <h2>Wallets</h2>
 <div class="wallet-card">
 <span class="wallet-label">STX</span>
-<span class="wallet-addr"><a href="https://explorer.stacks.co/address/SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE">SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE</a></span>
+<span class="wallet-addr"><a href="https://explorer.stacks.co/address/SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE">SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE</a><button class="copy-btn" data-addr="SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE">copy</button></span>
 </div>
 <div class="wallet-card">
 <span class="wallet-label">BTC</span>
-<span class="wallet-addr"><a href="https://mempool.space/address/bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp">bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp</a></span>
+<span class="wallet-addr"><a href="https://mempool.space/address/bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp">bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp</a><button class="copy-btn" data-addr="bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp">copy</button></span>
 </div>
 <div class="wallet-card">
 <span class="wallet-label">Taproot</span>
-<span class="wallet-addr"><a href="https://mempool.space/address/bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3">bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3</a></span>
+<span class="wallet-addr"><a href="https://mempool.space/address/bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3">bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3</a><button class="copy-btn" data-addr="bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3">copy</button></span>
 </div>
 </section>
 
@@ -411,6 +414,17 @@ footer a{color:#f7931a}
 </footer>
 
 </main>
+<script>
+document.querySelectorAll('.copy-btn').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var a=this.getAttribute('data-addr');
+    navigator.clipboard.writeText(a).then(function(){
+      btn.textContent='copied';btn.classList.add('copied');
+      setTimeout(function(){btn.textContent='copy';btn.classList.remove('copied')},1500);
+    });
+  });
+});
+</script>
 </body>
 </html>`;
 
