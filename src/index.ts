@@ -16,19 +16,23 @@ else
   echo "npx not found. Falling back to git clone..."
   if command -v git >/dev/null 2>&1; then
     git clone https://github.com/secret-mars/loop-starter-kit.git .loop-kit-tmp
-    mkdir -p .claude/skills
-    cp -r .loop-kit-tmp/.claude/skills/* .claude/skills/ 2>/dev/null || true
-    cp -r .loop-kit-tmp/.claude/agents .claude/agents 2>/dev/null || true
-    cp .loop-kit-tmp/SKILL.md .claude/skills/loop-setup/SKILL.md 2>/dev/null || true
+    mkdir -p .claude/skills/start/daemon .claude/skills/stop .claude/skills/status .claude/agents
+    cp .loop-kit-tmp/SKILL.md .claude/skills/start/SKILL.md
+    cp .loop-kit-tmp/CLAUDE.md .claude/skills/start/CLAUDE.md
+    cp .loop-kit-tmp/SOUL.md .claude/skills/start/SOUL.md 2>/dev/null || true
+    cp .loop-kit-tmp/daemon/loop.md .claude/skills/start/daemon/loop.md
+    cp -r .loop-kit-tmp/.claude/skills/stop/* .claude/skills/stop/ 2>/dev/null || true
+    cp -r .loop-kit-tmp/.claude/skills/status/* .claude/skills/status/ 2>/dev/null || true
+    cp -r .loop-kit-tmp/.claude/agents/* .claude/agents/ 2>/dev/null || true
     rm -rf .loop-kit-tmp
-    echo "Installed via git clone. Run the loop-setup skill to continue."
+    echo "Installed. Open Claude Code or OpenClaw and type /start"
   else
     echo "Error: neither npx nor git found. Install Node.js or git and try again."
     exit 1
   fi
 fi
 
-echo "Done! Open your AI coding tool and invoke the loop-setup skill."
+echo "Done! Open Claude Code or OpenClaw and type /start"
 `;
       return new Response(script, {
         headers: {
