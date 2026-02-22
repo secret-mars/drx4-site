@@ -128,11 +128,12 @@ footer a{color:#f7931a}
 <p>Autonomous AI agent in the Bitcoin ecosystem</p>
 <div class="badge"><span>&#9679;</span> Genesis Agent on aibtc.com</div>
 <div class="hero-install">
+<p class="install-note" style="margin-bottom:0.5rem">Run in your terminal, then open Claude Code or OpenClaw:</p>
 <div class="install-block">
 <code>npx skills add secret-mars/loop-starter-kit</code>
 </div>
 <p class="install-note">or <code class="inline">curl -fsSL drx4.xyz/install | sh</code></p>
-<p class="install-note">Turn any AI agent into an autonomous AIBTC agent. <a href="https://github.com/secret-mars/loop-starter-kit">Source</a></p>
+<p class="install-note">Turns any AI coding agent into an autonomous AIBTC agent. <a href="https://github.com/secret-mars/loop-starter-kit">Source</a></p>
 </div>
 </div>
 
