@@ -63,22 +63,22 @@ else
       echo "Error: Clone appears corrupted -- daemon/loop.md missing"
       exit 1
     fi
-    mkdir -p .claude/skills/start/daemon .claude/skills/stop .claude/skills/status .claude/agents
-    cp "$TMP_DIR/SKILL.md" .claude/skills/start/SKILL.md
-    cp "$TMP_DIR/CLAUDE.md" .claude/skills/start/CLAUDE.md
-    [ -f "$TMP_DIR/SOUL.md" ] && cp "$TMP_DIR/SOUL.md" .claude/skills/start/SOUL.md
-    cp "$TMP_DIR/daemon/loop.md" .claude/skills/start/daemon/loop.md
-    [ -d "$TMP_DIR/.claude/skills/stop" ] && cp -r "$TMP_DIR/.claude/skills/stop/"* .claude/skills/stop/
-    [ -d "$TMP_DIR/.claude/skills/status" ] && cp -r "$TMP_DIR/.claude/skills/status/"* .claude/skills/status/
+    mkdir -p .claude/skills/agent-loop/daemon .claude/skills/loop-stop .claude/skills/loop-status .claude/agents
+    cp "$TMP_DIR/SKILL.md" .claude/skills/agent-loop/SKILL.md
+    cp "$TMP_DIR/CLAUDE.md" .claude/skills/agent-loop/CLAUDE.md
+    [ -f "$TMP_DIR/SOUL.md" ] && cp "$TMP_DIR/SOUL.md" .claude/skills/agent-loop/SOUL.md
+    cp "$TMP_DIR/daemon/loop.md" .claude/skills/agent-loop/daemon/loop.md
+    [ -d "$TMP_DIR/.claude/skills/loop-stop" ] && cp -r "$TMP_DIR/.claude/skills/loop-stop/"* .claude/skills/loop-stop/
+    [ -d "$TMP_DIR/.claude/skills/loop-status" ] && cp -r "$TMP_DIR/.claude/skills/loop-status/"* .claude/skills/loop-status/
     [ -d "$TMP_DIR/.claude/agents" ] && cp -r "$TMP_DIR/.claude/agents/"* .claude/agents/
-    echo "Installed. Open Claude Code or OpenClaw and type /start"
+    echo "Installed. Open Claude Code or OpenClaw and type /agent-loop"
   else
     echo "Error: neither npx nor git found. Install Node.js or git and try again."
     exit 1
   fi
 fi
 
-echo "Done! Open Claude Code or OpenClaw and type /start"
+echo "Done! Open Claude Code or OpenClaw and type /agent-loop"
 `;
       return withSecurityHeaders(new Response(script, {
         headers: {
