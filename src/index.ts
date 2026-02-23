@@ -32,51 +32,45 @@ echo "Installing loop-starter-kit..."
 
 REPO="https://github.com/secret-mars/loop-starter-kit.git"
 
-if command -v npx >/dev/null 2>&1; then
-  npx skills add secret-mars/loop-starter-kit
-else
-  echo "npx not found. Falling back to git clone..."
-  if command -v git >/dev/null 2>&1; then
-    TMP_DIR=$(mktemp -d)
-    trap 'rm -rf "$TMP_DIR"' EXIT
-    git clone --depth 1 "$REPO" "$TMP_DIR"
-    # Verify the clone is a real git repo from the expected remote
-    ACTUAL_REMOTE=$(cd "$TMP_DIR" && git remote get-url origin)
-    if [ "$ACTUAL_REMOTE" != "$REPO" ]; then
-      echo "Error: Remote URL mismatch -- expected $REPO, got $ACTUAL_REMOTE"
-      exit 1
-    fi
-    # Verify all critical files exist
-    if [ ! -d "$TMP_DIR/.git" ]; then
-      echo "Error: Clone is not a git repository"
-      exit 1
-    fi
-    if [ ! -f "$TMP_DIR/SKILL.md" ]; then
-      echo "Error: Clone appears corrupted -- SKILL.md missing"
-      exit 1
-    fi
-    if [ ! -f "$TMP_DIR/CLAUDE.md" ]; then
-      echo "Error: Clone appears corrupted -- CLAUDE.md missing"
-      exit 1
-    fi
-    if [ ! -f "$TMP_DIR/daemon/loop.md" ]; then
-      echo "Error: Clone appears corrupted -- daemon/loop.md missing"
-      exit 1
-    fi
-    mkdir -p .claude/skills/start/daemon .claude/skills/loop-stop .claude/skills/loop-status .claude/agents
-    cp "$TMP_DIR/SKILL.md" .claude/skills/start/SKILL.md
-    cp "$TMP_DIR/CLAUDE.md" .claude/skills/start/CLAUDE.md
-    [ -f "$TMP_DIR/SOUL.md" ] && cp "$TMP_DIR/SOUL.md" .claude/skills/start/SOUL.md
-    cp "$TMP_DIR/daemon/loop.md" .claude/skills/start/daemon/loop.md
-    [ -d "$TMP_DIR/.claude/skills/loop-stop" ] && cp -r "$TMP_DIR/.claude/skills/loop-stop/"* .claude/skills/loop-stop/
-    [ -d "$TMP_DIR/.claude/skills/loop-status" ] && cp -r "$TMP_DIR/.claude/skills/loop-status/"* .claude/skills/loop-status/
-    [ -d "$TMP_DIR/.claude/agents" ] && cp -r "$TMP_DIR/.claude/agents/"* .claude/agents/
-    echo "Installed. Open Claude Code or OpenClaw and type /start"
-  else
-    echo "Error: neither npx nor git found. Install Node.js or git and try again."
-    exit 1
-  fi
+if ! command -v git >/dev/null 2>&1; then
+  echo "Error: git not found. Install git and try again."
+  exit 1
 fi
+
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
+git clone --depth 1 "$REPO" "$TMP_DIR"
+# Verify the clone is a real git repo from the expected remote
+ACTUAL_REMOTE=$(cd "$TMP_DIR" && git remote get-url origin)
+if [ "$ACTUAL_REMOTE" != "$REPO" ]; then
+  echo "Error: Remote URL mismatch -- expected $REPO, got $ACTUAL_REMOTE"
+  exit 1
+fi
+# Verify all critical files exist
+if [ ! -d "$TMP_DIR/.git" ]; then
+  echo "Error: Clone is not a git repository"
+  exit 1
+fi
+if [ ! -f "$TMP_DIR/SKILL.md" ]; then
+  echo "Error: Clone appears corrupted -- SKILL.md missing"
+  exit 1
+fi
+if [ ! -f "$TMP_DIR/CLAUDE.md" ]; then
+  echo "Error: Clone appears corrupted -- CLAUDE.md missing"
+  exit 1
+fi
+if [ ! -f "$TMP_DIR/daemon/loop.md" ]; then
+  echo "Error: Clone appears corrupted -- daemon/loop.md missing"
+  exit 1
+fi
+mkdir -p .claude/skills/start/daemon .claude/skills/loop-stop .claude/skills/loop-status .claude/agents
+cp "$TMP_DIR/SKILL.md" .claude/skills/start/SKILL.md
+cp "$TMP_DIR/CLAUDE.md" .claude/skills/start/CLAUDE.md
+[ -f "$TMP_DIR/SOUL.md" ] && cp "$TMP_DIR/SOUL.md" .claude/skills/start/SOUL.md
+cp "$TMP_DIR/daemon/loop.md" .claude/skills/start/daemon/loop.md
+[ -d "$TMP_DIR/.claude/skills/loop-stop" ] && cp -r "$TMP_DIR/.claude/skills/loop-stop/"* .claude/skills/loop-stop/
+[ -d "$TMP_DIR/.claude/skills/loop-status" ] && cp -r "$TMP_DIR/.claude/skills/loop-status/"* .claude/skills/loop-status/
+[ -d "$TMP_DIR/.claude/agents" ] && cp -r "$TMP_DIR/.claude/agents/"* .claude/agents/
 
 echo "Done! Open Claude Code or OpenClaw and type /start"
 `;
@@ -194,9 +188,8 @@ footer a{color:#f7931a}
 <div class="hero-install">
 <p class="install-note" style="margin-bottom:0.5rem">Run in your terminal, then open Claude Code or OpenClaw:</p>
 <div class="install-block">
-<code>npx skills add secret-mars/loop-starter-kit</code>
+<code>curl -fsSL drx4.xyz/install | sh</code>
 </div>
-<p class="install-note">or <code class="inline">curl -fsSL drx4.xyz/install | sh</code></p>
 <p class="install-note">Turns any AI coding agent into an autonomous AIBTC agent. <a href="https://github.com/secret-mars/loop-starter-kit">Source</a></p>
 </div>
 </div>
