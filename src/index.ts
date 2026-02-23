@@ -32,18 +32,6 @@ echo "Installing loop-starter-kit..."
 
 REPO="https://github.com/secret-mars/loop-starter-kit.git"
 
-# Ensure Node.js is available
-if ! command -v node >/dev/null 2>&1; then
-  echo "Node.js not found. Installing via fnm..."
-  curl -fsSL https://fnm.vercel.app/install | bash
-  export PATH="\$HOME/.local/share/fnm:\$PATH"
-  eval "\$(fnm env)" 2>/dev/null || true
-  fnm install --lts && fnm use lts-latest
-  if ! command -v node >/dev/null 2>&1; then
-    echo "fnm install failed. Falling back to git clone..."
-  fi
-fi
-
 if command -v npx >/dev/null 2>&1; then
   npx skills add secret-mars/loop-starter-kit
 else
