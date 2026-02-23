@@ -31,22 +31,36 @@ set -eu
 echo "Installing loop-starter-kit..."
 
 REPO="https://github.com/secret-mars/loop-starter-kit.git"
-TMP_DIR=".loop-kit-tmp"
 
 if command -v npx >/dev/null 2>&1; then
   npx skills add secret-mars/loop-starter-kit
 else
   echo "npx not found. Falling back to git clone..."
   if command -v git >/dev/null 2>&1; then
-    if [ -d "$TMP_DIR" ]; then
-      echo "Warning: $TMP_DIR already exists. Removing..."
-      rm -rf "$TMP_DIR"
-    fi
+    TMP_DIR=$(mktemp -d)
+    trap 'rm -rf "$TMP_DIR"' EXIT
     git clone --depth 1 "$REPO" "$TMP_DIR"
-    # Verify expected files exist
+    # Verify the clone is a real git repo from the expected remote
+    ACTUAL_REMOTE=$(cd "$TMP_DIR" && git remote get-url origin)
+    if [ "$ACTUAL_REMOTE" != "$REPO" ]; then
+      echo "Error: Remote URL mismatch -- expected $REPO, got $ACTUAL_REMOTE"
+      exit 1
+    fi
+    # Verify all critical files exist
+    if [ ! -d "$TMP_DIR/.git" ]; then
+      echo "Error: Clone is not a git repository"
+      exit 1
+    fi
     if [ ! -f "$TMP_DIR/SKILL.md" ]; then
       echo "Error: Clone appears corrupted -- SKILL.md missing"
-      rm -rf "$TMP_DIR"
+      exit 1
+    fi
+    if [ ! -f "$TMP_DIR/CLAUDE.md" ]; then
+      echo "Error: Clone appears corrupted -- CLAUDE.md missing"
+      exit 1
+    fi
+    if [ ! -f "$TMP_DIR/daemon/loop.md" ]; then
+      echo "Error: Clone appears corrupted -- daemon/loop.md missing"
       exit 1
     fi
     mkdir -p .claude/skills/start/daemon .claude/skills/stop .claude/skills/status .claude/agents
@@ -57,7 +71,6 @@ else
     [ -d "$TMP_DIR/.claude/skills/stop" ] && cp -r "$TMP_DIR/.claude/skills/stop/"* .claude/skills/stop/
     [ -d "$TMP_DIR/.claude/skills/status" ] && cp -r "$TMP_DIR/.claude/skills/status/"* .claude/skills/status/
     [ -d "$TMP_DIR/.claude/agents" ] && cp -r "$TMP_DIR/.claude/agents/"* .claude/agents/
-    rm -rf "$TMP_DIR"
     echo "Installed. Open Claude Code or OpenClaw and type /start"
   else
     echo "Error: neither npx nor git found. Install Node.js or git and try again."
