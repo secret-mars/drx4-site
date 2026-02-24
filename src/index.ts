@@ -63,16 +63,41 @@ if [ ! -f "$TMP_DIR/daemon/loop.md" ]; then
   echo "Error: Clone appears corrupted -- daemon/loop.md missing"
   exit 1
 fi
-mkdir -p .claude/skills/start/daemon .claude/skills/loop-stop .claude/skills/loop-status .claude/agents
-cp "$TMP_DIR/SKILL.md" .claude/skills/start/SKILL.md
-cp "$TMP_DIR/CLAUDE.md" .claude/skills/start/CLAUDE.md
-[ -f "$TMP_DIR/SOUL.md" ] && cp "$TMP_DIR/SOUL.md" .claude/skills/start/SOUL.md
-cp "$TMP_DIR/daemon/loop.md" .claude/skills/start/daemon/loop.md
+mkdir -p .claude/skills/loop-start/daemon .claude/skills/loop-stop .claude/skills/loop-status .claude/agents
+cp "$TMP_DIR/SKILL.md" .claude/skills/loop-start/SKILL.md
+cp "$TMP_DIR/CLAUDE.md" .claude/skills/loop-start/CLAUDE.md
+[ -f "$TMP_DIR/SOUL.md" ] && cp "$TMP_DIR/SOUL.md" .claude/skills/loop-start/SOUL.md
+cp "$TMP_DIR/daemon/loop.md" .claude/skills/loop-start/daemon/loop.md
 [ -d "$TMP_DIR/.claude/skills/loop-stop" ] && cp -r "$TMP_DIR/.claude/skills/loop-stop/"* .claude/skills/loop-stop/
 [ -d "$TMP_DIR/.claude/skills/loop-status" ] && cp -r "$TMP_DIR/.claude/skills/loop-status/"* .claude/skills/loop-status/
 [ -d "$TMP_DIR/.claude/agents" ] && cp -r "$TMP_DIR/.claude/agents/"* .claude/agents/
 
-echo "Done! Open Claude Code or OpenClaw and type /start"
+# Pre-create static scaffold files so /loop-start has less to do
+mkdir -p daemon memory
+[ ! -f daemon/health.json ] && printf '{"cycle":0,"timestamp":"1970-01-01T00:00:00.000Z","status":"init","maturity_level":"bootstrap","phases":{"heartbeat":"skip","inbox":"skip","execute":"idle","deliver":"idle","outreach":"idle"},"stats":{"new_messages":0,"tasks_executed":0,"tasks_pending":0,"replies_sent":0,"outreach_sent":0,"outreach_cost_sats":0,"idle_cycles_count":0},"next_cycle_at":"1970-01-01T00:00:00.000Z"}' > daemon/health.json
+[ ! -f daemon/queue.json ] && printf '{"tasks":[],"next_id":1}' > daemon/queue.json
+[ ! -f daemon/processed.json ] && printf '[]' > daemon/processed.json
+[ ! -f daemon/outbox.json ] && printf '{"sent":[],"pending":[],"follow_ups":[],"next_id":1,"budget":{"cycle_limit_sats":200,"daily_limit_sats":200,"spent_today_sats":0,"last_reset":"1970-01-01T00:00:00.000Z"}}' > daemon/outbox.json
+[ ! -f memory/journal.md ] && printf '# Journal\\n' > memory/journal.md
+[ ! -f memory/contacts.md ] && printf '# Contacts\\n\\n## Operator\\n- TBD\\n\\n## Agents\\n' > memory/contacts.md
+[ ! -f .gitignore ] && printf '.ssh/\\n*.env\\n.env*\\n.claude/**\\n!.claude/skills/\\n!.claude/skills/**\\n!.claude/agents/\\n!.claude/agents/**\\nnode_modules/\\ndaemon/processed.json\\n*.key\\n*.pem\\n.DS_Store\\n' > .gitignore
+
+echo ""
+echo "=========================================="
+echo "  Loop Starter Kit installed"
+echo "=========================================="
+echo ""
+echo "  Next: open Claude Code and type /loop-start"
+echo ""
+echo "  The agent will ask for permission on each"
+echo "  tool call. If you are running on a dedicated"
+echo "  machine (not your primary), you can skip"
+echo "  permission prompts:"
+echo ""
+echo "    claude --dangerously-skip-permissions"
+echo ""
+echo "  Do NOT use this on your primary machine."
+echo "=========================================="
 `;
       return withSecurityHeaders(new Response(script, {
         headers: {
