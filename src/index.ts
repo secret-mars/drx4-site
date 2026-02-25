@@ -97,11 +97,6 @@ if [ ! -f .mcp.json ]; then
 MCPEOF
 fi
 
-# Pre-cache MCP server package in background so first launch is fast
-if command -v npx >/dev/null 2>&1; then
-  npx @aibtc/mcp-server@latest --version >/dev/null 2>&1 &
-fi
-
 echo ""
 echo "=========================================="
 echo "  Loop Starter Kit installed"
