@@ -19,7 +19,12 @@ export default {
       return withSecurityHeaders(new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } }));
     }
 
-    const url = new URL(request.url);
+    let url: URL;
+    try {
+      url = new URL(request.url);
+    } catch {
+      return withSecurityHeaders(new Response("Bad Request", { status: 400 }));
+    }
     const pathname = url.pathname.replace(/\/+/g, "/").replace(/\/$/, "") || "/";
 
     if (pathname === "/install") {
