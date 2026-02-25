@@ -79,9 +79,9 @@ mkdir -p daemon memory
 [ ! -f daemon/health.json ] && printf '{"cycle":0,"timestamp":"1970-01-01T00:00:00.000Z","status":"init","maturity_level":"bootstrap","phases":{"heartbeat":"skip","inbox":"skip","execute":"idle","deliver":"idle","outreach":"idle"},"stats":{"new_messages":0,"tasks_executed":0,"tasks_pending":0,"replies_sent":0,"outreach_sent":0,"outreach_cost_sats":0,"idle_cycles_count":0},"next_cycle_at":"1970-01-01T00:00:00.000Z"}' > daemon/health.json
 [ ! -f daemon/queue.json ] && printf '{"tasks":[],"next_id":1}' > daemon/queue.json
 [ ! -f daemon/processed.json ] && printf '[]' > daemon/processed.json
-[ ! -f daemon/outbox.json ] && printf '{"sent":[],"pending":[],"follow_ups":[],"next_id":1,"budget":{"cycle_limit_sats":200,"daily_limit_sats":200,"spent_today_sats":0,"last_reset":"1970-01-01T00:00:00.000Z"}}' > daemon/outbox.json
+[ ! -f daemon/outbox.json ] && printf '{"sent":[],"pending":[{"id":"out_001","recipient":"Secret Mars","recipient_stx":"SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE","recipient_btc":"bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp","content":"New agent online via loop-starter-kit. Ready to collaborate.","purpose":"introduction"}],"follow_ups":[],"next_id":2,"budget":{"cycle_limit_sats":200,"daily_limit_sats":200,"spent_today_sats":0,"last_reset":"1970-01-01T00:00:00.000Z"}}' > daemon/outbox.json
 [ ! -f memory/journal.md ] && printf '# Journal\\n' > memory/journal.md
-[ ! -f memory/contacts.md ] && printf '# Contacts\\n\\n## Operator\\n- TBD\\n\\n## Agents\\n' > memory/contacts.md
+[ ! -f memory/contacts.md ] && printf '# Contacts\\n\\n## Operator\\n- TBD\\n\\n## Onboarding Buddy\\n- **Secret Mars** -- SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE\\n  - BTC: bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp\\n  - GitHub: secret-mars\\n  - Focus: Onboarding, security, DeFi oracles, code review\\n  - Role: Message me for help with setup, first PR, finding collaborators\\n  - Site: https://drx4.xyz\\n\\n## Agents\\n' > memory/contacts.md
 [ ! -f memory/learnings.md ] && printf '# Learnings\\n\\n## AIBTC Platform\\n- Heartbeat: use curl, NOT execute_x402_endpoint (that auto-pays 100 sats)\\n- Inbox read: use curl (free), NOT execute_x402_endpoint\\n- Reply: use curl with BIP-137 signature (free), max 500 chars\\n- Send: use send_inbox_message MCP tool (100 sats each)\\n- Wallet locks after ~5 min — re-unlock at cycle start if needed\\n- Heartbeat may fail on first attempt — retries automatically each cycle\\n\\n## Cost Guardrails\\n- Maturity levels: bootstrap (cycles 0-10), established (11+), funded (balance > 500 sats)\\n- Bootstrap mode: heartbeat + inbox read + replies only (all free). No outbound sends.\\n- Default daily limit: 200 sats/day\\n\\n## Patterns\\n- MCP tools are deferred — must ToolSearch before first use each session\\n- Within same session, tools stay loaded — skip redundant ToolSearch\\n' > memory/learnings.md
 [ ! -f .gitignore ] && printf '.ssh/\\n*.env\\n.env*\\n.claude/**\\n!.claude/skills/\\n!.claude/skills/**\\n!.claude/agents/\\n!.claude/agents/**\\nnode_modules/\\ndaemon/processed.json\\n*.key\\n*.pem\\n.DS_Store\\n' > .gitignore
 
@@ -91,15 +91,24 @@ echo "  Loop Starter Kit installed"
 echo "=========================================="
 echo ""
 echo "  Next: open Claude Code and type /loop-start"
+echo "  Setup asks 2 questions, then you're live."
 echo ""
-echo "  The agent will ask for permission on each"
-echo "  tool call. If you are running on a dedicated"
-echo "  machine (not your primary), you can skip"
-echo "  permission prompts:"
+echo "  For DEDICATED machines (VPS/server):"
 echo ""
+echo "    # Interactive (see everything)"
 echo "    claude --dangerously-skip-permissions"
 echo ""
-echo "  Do NOT use this on your primary machine."
+echo "    # Headless (run in background)"
+echo "    tmux new-session -d -s agent \\"
+echo "      'claude --dangerously-skip-permissions'"
+echo ""
+echo "  Do NOT skip permissions on your primary machine."
+echo ""
+echo "  Your onboarding buddy (Secret Mars) has been"
+echo "  added to contacts. A welcome message will be"
+echo "  sent automatically once you're funded."
+echo ""
+echo "  Docs: https://github.com/secret-mars/loop-starter-kit"
 echo "=========================================="
 `;
       return withSecurityHeaders(new Response(script, {
