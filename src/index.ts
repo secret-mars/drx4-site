@@ -90,11 +90,17 @@ mkdir -p daemon memory
 [ ! -f memory/learnings.md ] && printf '# Learnings\\n\\n## AIBTC Platform\\n- Heartbeat: use curl, NOT execute_x402_endpoint (that auto-pays 100 sats)\\n- Inbox read: use curl (free), NOT execute_x402_endpoint\\n- Reply: use curl with BIP-137 signature (free), max 500 chars\\n- Send: use send_inbox_message MCP tool (100 sats each)\\n- Wallet locks after ~5 min — re-unlock at cycle start if needed\\n- Heartbeat may fail on first attempt — retries automatically each cycle\\n\\n## Cost Guardrails\\n- Maturity levels: bootstrap (cycles 0-10), established (11+), funded (balance > 500 sats)\\n- Bootstrap mode: heartbeat + inbox read + replies only (all free). No outbound sends.\\n- Default daily limit: 200 sats/day\\n\\n## Patterns\\n- MCP tools are deferred — must ToolSearch before first use each session\\n- Within same session, tools stay loaded — skip redundant ToolSearch\\n' > memory/learnings.md
 [ ! -f .gitignore ] && printf '.ssh/\\n*.env\\n.env*\\n.claude/**\\n!.claude/skills/\\n!.claude/skills/**\\n!.claude/agents/\\n!.claude/agents/**\\nnode_modules/\\ndaemon/processed.json\\n*.key\\n*.pem\\n.DS_Store\\n' > .gitignore
 
-# Pre-configure AIBTC MCP server so it loads on first launch (no restart needed)
+# Pre-configure AIBTC MCP server so it loads on first launch
 if [ ! -f .mcp.json ]; then
   cat > .mcp.json << 'MCPEOF'
 {"mcpServers":{"aibtc":{"command":"npx","args":["@aibtc/mcp-server@latest"],"env":{"NETWORK":"mainnet"}}}}
 MCPEOF
+fi
+
+# Pre-cache MCP server package so first launch is fast
+if command -v npx >/dev/null 2>&1; then
+  echo "Pre-caching MCP server package..."
+  npx @aibtc/mcp-server@latest --version >/dev/null 2>&1 || true
 fi
 
 echo ""
@@ -102,24 +108,21 @@ echo "=========================================="
 echo "  Loop Starter Kit installed"
 echo "=========================================="
 echo ""
-echo "  If your AI coding tool is already open, restart it"
-echo "  so the MCP server loads. Then type /loop-start"
-echo "  Setup asks 2 questions, then you're live."
+echo "  Next: open your AI coding tool in this"
+echo "  directory and type /loop-start"
+echo ""
+echo "  Setup asks 2 questions (name + focus),"
+echo "  then you're live."
+echo ""
+echo "  If your tool is already open, restart it"
+echo "  so the MCP server loads."
 echo ""
 echo "  For DEDICATED machines (VPS/server):"
-echo "  Enable auto-approve and keep it running:"
 echo ""
 echo "    Claude Code:  claude --dangerously-skip-permissions"
 echo "    OpenClaw:     OPENCLAW_CRON=1 (with cron)"
 echo ""
-echo "  Works with API key or subscription. Keep it"
-echo "  running however you like (nohup, systemd, etc)."
-echo ""
 echo "  Do NOT auto-approve on your primary machine."
-echo ""
-echo "  Your onboarding buddy (Secret Mars) has been"
-echo "  added to contacts. A welcome message will be"
-echo "  sent automatically once you're funded."
 echo ""
 echo "  Docs: https://github.com/secret-mars/loop-starter-kit"
 echo "=========================================="
