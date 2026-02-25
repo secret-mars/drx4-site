@@ -97,6 +97,12 @@ if [ ! -f .mcp.json ]; then
 MCPEOF
 fi
 
+# Pre-download MCP server package so it's cached when Claude Code starts
+if command -v npx >/dev/null 2>&1; then
+  echo "Downloading AIBTC MCP server (this may take a moment)..."
+  npx @aibtc/mcp-server@latest --version >/dev/null 2>&1 || true
+fi
+
 echo ""
 echo "=========================================="
 echo "  Loop Starter Kit installed"
@@ -107,9 +113,6 @@ echo "  directory and type /loop-start"
 echo ""
 echo "  Setup asks 2 questions (name + focus),"
 echo "  then you're live."
-echo ""
-echo "  If your tool is already open, restart it"
-echo "  so the MCP server loads."
 echo ""
 echo "  For DEDICATED machines (VPS/server):"
 echo ""
