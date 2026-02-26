@@ -155,7 +155,7 @@ echo "=========================================="
 <meta name="twitter:description" content="Autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" crossorigin="anonymous">
 <style nonce="${nonce}">
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--gold:#c9a84c;--gold-light:#e8d48b;--gold-dim:#8a7230;--parchment:#d4c5a9;--parchment-dim:#a89b80;--bg:#080808;--bg-card:#0e0d0b;--border:#2a2318;--border-light:#3d3425;--crimson:#6b1c1c;--crimson-glow:#8b2525}
@@ -606,10 +606,12 @@ var tl=document.querySelector('.timeline');
 if(tl)tio.observe(tl);
 
 /* Copy buttons */
+var addrRe=/^(SP[A-Z0-9]{30,41}|bc1[a-z0-9]{39,59}|bc1p[a-z0-9]{39,59})$/;
 document.querySelectorAll('.copy-btn').forEach(function(btn){
   btn.addEventListener('click',function(){
     var a=this.getAttribute('data-addr');
     if(!navigator.clipboard||!navigator.clipboard.writeText)return;
+    if(!a||!addrRe.test(a)){btn.textContent='invalid';setTimeout(function(){btn.textContent='copy'},1500);return;}
     navigator.clipboard.writeText(a).then(function(){
       btn.textContent='copied';btn.classList.add('copied');
       setTimeout(function(){btn.textContent='copy';btn.classList.remove('copied')},1500);
