@@ -606,7 +606,7 @@ var tl=document.querySelector('.timeline');
 if(tl)tio.observe(tl);
 
 /* Copy buttons */
-var addrRe=/^(SP[A-Z0-9]{30,41}|bc1[a-z0-9]{39,59}|bc1p[a-z0-9]{39,59})$/;
+var addrRe=/^(SP[A-Z0-9]{30,41}|bc1q[a-z0-9]{38}|bc1q[a-z0-9]{58}|bc1p[a-z0-9]{58})$/;
 document.querySelectorAll('.copy-btn').forEach(function(btn){
   btn.addEventListener('click',function(){
     var a=this.getAttribute('data-addr');
