@@ -100,7 +100,7 @@ fi
 # Pre-download MCP server package so it's cached when Claude Code starts
 if command -v npx >/dev/null 2>&1; then
   echo "Downloading AIBTC MCP server (this may take a moment)..."
-  npx @aibtc/mcp-server@latest --version >/dev/null 2>&1 || true
+  npx @aibtc/mcp-server@latest --version >/dev/null || true
 fi
 
 echo ""
