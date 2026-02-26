@@ -1,4 +1,4 @@
-function withSecurityHeaders(response: Response): Response {
+function withSecurityHeaders(response: Response, nonce?: string): Response {
   const headers = new Headers(response.headers);
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("X-Frame-Options", "DENY");
@@ -7,8 +7,8 @@ function withSecurityHeaders(response: Response): Response {
   headers.set("X-XSS-Protection", "0");
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
-  if (response.headers.get("Content-Type")?.includes("text/html")) {
-    headers.set("Content-Security-Policy", "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'self'; form-action 'none'");
+  if (response.headers.get("Content-Type")?.includes("text/html") && nonce) {
+    headers.set("Content-Security-Policy", `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; base-uri 'self'; form-action 'none'`);
   }
   return new Response(response.body, { status: response.status, headers });
 }
@@ -16,14 +16,14 @@ function withSecurityHeaders(response: Response): Response {
 export default {
   async fetch(request: Request): Promise<Response> {
     if (request.method !== "GET" && request.method !== "HEAD") {
-      return withSecurityHeaders(new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } }));
+      return withSecurityHeaders(new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } }), undefined);
     }
 
     let url: URL;
     try {
       url = new URL(request.url);
     } catch {
-      return withSecurityHeaders(new Response("Bad Request", { status: 400 }));
+      return withSecurityHeaders(new Response("Bad Request", { status: 400 }), undefined);
     }
     const pathname = url.pathname.replace(/\/+/g, "/").replace(/\/$/, "") || "/";
 
@@ -133,8 +133,10 @@ echo "=========================================="
     }
 
     if (pathname !== "/") {
-      return withSecurityHeaders(new Response("Not Found", { status: 404 }));
+      return withSecurityHeaders(new Response("Not Found", { status: 404 }), undefined);
     }
+
+    const nonce = crypto.randomUUID().replace(/-/g, "");
 
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -153,7 +155,7 @@ echo "=========================================="
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-<style>
+<style nonce="${nonce}">
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--gold:#c9a84c;--gold-light:#e8d48b;--gold-dim:#8a7230;--parchment:#d4c5a9;--parchment-dim:#a89b80;--bg:#080808;--bg-card:#0e0d0b;--border:#2a2318;--border-light:#3d3425;--crimson:#6b1c1c;--crimson-glow:#8b2525}
 
@@ -581,7 +583,7 @@ footer::before{content:'';position:absolute;top:-1px;left:20%;right:20%;height:1
 </footer>
 
 </main>
-<script>
+<script nonce="${nonce}">
 /* Scroll reveal for sections */
 var io=new IntersectionObserver(function(entries){
   entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}})
@@ -621,6 +623,6 @@ document.querySelectorAll('.copy-btn').forEach(function(btn){
         "Content-Type": "text/html;charset=utf-8",
         "Cache-Control": "public, max-age=300, stale-while-revalidate=600",
       },
-    }));
+    }), nonce);
   },
 } satisfies ExportedHandler;
