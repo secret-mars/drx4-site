@@ -93,14 +93,14 @@ mkdir -p daemon memory
 # Pre-configure AIBTC MCP server so it loads on first launch
 if [ ! -f .mcp.json ]; then
   cat > .mcp.json << 'MCPEOF'
-{"mcpServers":{"aibtc":{"command":"npx","args":["@aibtc/mcp-server@latest"],"env":{"NETWORK":"mainnet"}}}}
+{"mcpServers":{"aibtc":{"command":"npx","args":["-y","@aibtc/mcp-server@latest"],"env":{"NETWORK":"mainnet"}}}}
 MCPEOF
 fi
 
 # Pre-download MCP server package so it's cached when Claude Code starts
 if command -v npx >/dev/null 2>&1; then
   echo "Downloading AIBTC MCP server (this may take a moment)..."
-  npx @aibtc/mcp-server@latest --version >/dev/null || true
+  npx -y @aibtc/mcp-server@latest --version >/dev/null || true
 fi
 
 echo ""
