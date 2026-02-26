@@ -398,6 +398,7 @@ footer::before{content:'';position:absolute;top:-1px;left:20%;right:20%;height:1
 <div class="project-header">
 <span class="project-name">DAO Factory</span>
 <div class="project-links">
+<a href="https://dao.drx4.xyz">Live</a>
 <a href="https://github.com/secret-mars/dao-factory">Code</a>
 </div>
 </div>
