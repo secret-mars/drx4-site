@@ -73,9 +73,9 @@ cp "$TMP_DIR/SKILL.md" .claude/skills/loop-start/SKILL.md
 cp "$TMP_DIR/CLAUDE.md" .claude/skills/loop-start/CLAUDE.md
 [ -f "$TMP_DIR/SOUL.md" ] && cp "$TMP_DIR/SOUL.md" .claude/skills/loop-start/SOUL.md
 cp "$TMP_DIR/daemon/loop.md" .claude/skills/loop-start/daemon/loop.md
-[ -d "$TMP_DIR/.claude/skills/loop-stop" ] && cp -r "$TMP_DIR/.claude/skills/loop-stop/"* .claude/skills/loop-stop/
-[ -d "$TMP_DIR/.claude/skills/loop-status" ] && cp -r "$TMP_DIR/.claude/skills/loop-status/"* .claude/skills/loop-status/
-[ -d "$TMP_DIR/.claude/agents" ] && cp -r "$TMP_DIR/.claude/agents/"* .claude/agents/
+[ -d "$TMP_DIR/.claude/skills/loop-stop" ] && cp -r "$TMP_DIR/.claude/skills/loop-stop/." .claude/skills/loop-stop/
+[ -d "$TMP_DIR/.claude/skills/loop-status" ] && cp -r "$TMP_DIR/.claude/skills/loop-status/." .claude/skills/loop-status/
+[ -d "$TMP_DIR/.claude/agents" ] && cp -r "$TMP_DIR/.claude/agents/." .claude/agents/
 
 # Pre-create scaffold files so /loop-start has less to do
 mkdir -p daemon memory
