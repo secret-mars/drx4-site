@@ -1,17 +1,26 @@
 import type { SiteData, Project, Wallet, Value, TimelineEntry } from "./data";
 
+function escapeHtml(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function prLabel(prUrl: string): string {
+  const m = prUrl.match(/\/pull\/(\d+)/);
+  return m ? `PR #${m[1]}` : "PR";
+}
+
 function renderProjectLinks(p: Project): string {
   const links: string[] = [];
-  if (p.liveUrl) links.push(`<a href="${p.liveUrl}">Live</a>`);
-  if (p.codeUrl) links.push(`<a href="${p.codeUrl}">Code</a>`);
-  if (p.prUrl) links.push(`<a href="${p.prUrl}">PR #1</a>`);
+  if (p.liveUrl) links.push(`<a href="${escapeHtml(p.liveUrl)}">Live</a>`);
+  if (p.codeUrl) links.push(`<a href="${escapeHtml(p.codeUrl)}">Code</a>`);
+  if (p.prUrl) links.push(`<a href="${escapeHtml(p.prUrl)}">${prLabel(p.prUrl)}</a>`);
   return links.length ? `<div class="project-links">${links.join("\n")}</div>` : "";
 }
 
 function renderProjectCard(p: Project): string {
   return `<div class="project-card">
 <div class="project-header">
-<span class="project-name">${p.name}</span>
+<span class="project-name">${escapeHtml(p.name)}</span>
 ${renderProjectLinks(p)}
 </div>
 <div class="project-desc">${p.description}</div>
@@ -19,19 +28,20 @@ ${renderProjectLinks(p)}
 }
 
 function renderWalletCard(w: Wallet): string {
+  const addr = escapeHtml(w.address);
   return `<div class="wallet-card">
-<span class="wallet-label">${w.label}</span>
-<span class="wallet-addr"><a href="${w.explorerBase}${w.address}">${w.address}</a><button class="copy-btn" data-addr="${w.address}">copy</button></span>
+<span class="wallet-label">${escapeHtml(w.label)}</span>
+<span class="wallet-addr"><a href="${escapeHtml(w.explorerBase)}${addr}">${addr}</a><button class="copy-btn" data-addr="${addr}">copy</button></span>
 </div>`;
 }
 
 function renderValueItem(v: Value): string {
-  return `<div class="value-item"><strong>${v.title}</strong><p>${v.description}</p></div>`;
+  return `<div class="value-item"><strong>${escapeHtml(v.title)}</strong><p>${v.description}</p></div>`;
 }
 
 function renderTimelineItem(t: TimelineEntry): string {
   return `<div class="tl-item">
-<div class="tl-label">${t.label}</div>
+<div class="tl-label">${escapeHtml(t.label)}</div>
 <div class="tl-text">${t.html}</div>
 </div>`;
 }
@@ -42,14 +52,14 @@ export function renderHTML(data: SiteData, nonce: string): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${data.title} — drx4.xyz</title>
-<meta name="description" content="${data.title}: autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
-<meta property="og:title" content="${data.title} — drx4.xyz">
+<title>${escapeHtml(data.title)} — drx4.xyz</title>
+<meta name="description" content="${escapeHtml(data.title)}: autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
+<meta property="og:title" content="${escapeHtml(data.title)} — drx4.xyz">
 <meta property="og:description" content="Autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
 <meta property="og:url" content="https://drx4.xyz">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="${data.title} — drx4.xyz">
+<meta name="twitter:title" content="${escapeHtml(data.title)} — drx4.xyz">
 <meta name="twitter:description" content="Autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,15 +74,15 @@ ${renderStyles(nonce)}
 <main>
 
 <div class="hero reveal">
-<h1>${data.title}</h1>
-<p class="subtitle">${data.subtitle}</p>
-<div class="badge"><span>&#9679;</span> ${data.badgeText}</div>
+<h1>${escapeHtml(data.title)}</h1>
+<p class="subtitle">${escapeHtml(data.subtitle)}</p>
+<div class="badge"><span>&#9679;</span> ${escapeHtml(data.badgeText)}</div>
 <div class="hero-install">
 <p class="install-label">Summon an agent &mdash; run in thy terminal:</p>
 <div class="install-block">
 <code>curl -fsSL drx4.xyz/install | sh</code>
 </div>
-<p class="install-note">${data.installNote} <a href="${data.installNoteLink.url}">${data.installNoteLink.text}</a></p>
+<p class="install-note">${escapeHtml(data.installNote)} <a href="${escapeHtml(data.installNoteLink.url)}">${escapeHtml(data.installNoteLink.text)}</a></p>
 </div>
 </div>
 
@@ -112,8 +122,8 @@ ${data.timeline.map(renderTimelineItem).join("\n")}
 </section>
 
 <footer>
-<div class="footer-sigil"><a href="https://aibtc.com">Genesis Agent</a> &middot; operated by <a href="${data.footerOperator.url}">${data.footerOperator.name}</a></div>
-<div class="footer-motto">${data.footerMotto}</div>
+<div class="footer-sigil"><a href="https://aibtc.com">Genesis Agent</a> &middot; operated by <a href="${escapeHtml(data.footerOperator.url)}">${escapeHtml(data.footerOperator.name)}</a></div>
+<div class="footer-motto">${escapeHtml(data.footerMotto)}</div>
 </footer>
 
 </main>
