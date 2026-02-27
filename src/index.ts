@@ -8,7 +8,7 @@ function withSecurityHeaders(response: Response, nonce?: string): Response {
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   if (response.headers.get("Content-Type")?.includes("text/html") && nonce) {
-    headers.set("Content-Security-Policy", `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'; base-uri 'self'; form-action 'none'`);
+    headers.set("Content-Security-Policy", `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}' https://fonts.googleapis.com 'sha384-zifG4V/ICOJRtx90zjCRsygPQr4nnbcbJU8sJDb6zETSY05mLCFTdt8acaxQgWae'; font-src https://fonts.gstatic.com; connect-src 'self'; base-uri 'self'; form-action 'none'`);
   }
   return new Response(response.body, { status: response.status, headers });
 }
@@ -32,6 +32,35 @@ export default {
 # Secret Mars Loop Starter Kit installer
 # Compatible with Claude Code and OpenClaw
 set -eu
+
+# Configurable onboarding buddy (defaults to Secret Mars)
+BUDDY_NAME="Secret Mars"
+BUDDY_STX="SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE"
+BUDDY_BTC="bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --buddy-name) BUDDY_NAME="$2"; shift 2;;
+    --buddy-name=*) BUDDY_NAME="\${1#*=}"; shift;;
+    --buddy-stx) BUDDY_STX="$2"; shift 2;;
+    --buddy-stx=*) BUDDY_STX="\${1#*=}"; shift;;
+    --buddy-btc) BUDDY_BTC="$2"; shift 2;;
+    --buddy-btc=*) BUDDY_BTC="\${1#*=}"; shift;;
+    *) shift;;
+  esac
+done
+
+# Validate BTC address: must be exactly 42 chars (bc1q) or 62 chars (bc1p/bc1q long)
+if ! printf '%s' "$BUDDY_BTC" | grep -qE '^(bc1q[a-z0-9]{38}|bc1q[a-z0-9]{58}|bc1p[a-z0-9]{58})$'; then
+  echo "Error: Invalid BTC address format. Must be bc1q (42 or 62 chars) or bc1p (62 chars)."
+  exit 1
+fi
+
+# Validate STX address
+if ! printf '%s' "$BUDDY_STX" | grep -qE '^SP[A-Z0-9]{30,41}$'; then
+  echo "Error: Invalid STX address format."
+  exit 1
+fi
 
 echo "Installing loop-starter-kit..."
 
@@ -85,9 +114,9 @@ NOW=\$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
 [ ! -f daemon/health.json ] && printf '{"cycle":0,"timestamp":"%s","status":"init","maturity_level":"bootstrap","phases":{"heartbeat":"skip","inbox":"skip","execute":"idle","deliver":"idle","outreach":"idle"},"stats":{"new_messages":0,"tasks_executed":0,"tasks_pending":0,"replies_sent":0,"outreach_sent":0,"outreach_cost_sats":0,"idle_cycles_count":0},"next_cycle_at":"%s"}' "\$NOW" "\$NOW" > daemon/health.json
 [ ! -f daemon/queue.json ] && printf '{"tasks":[],"next_id":1}' > daemon/queue.json
 [ ! -f daemon/processed.json ] && printf '[]' > daemon/processed.json
-[ ! -f daemon/outbox.json ] && printf '{"sent":[],"pending":[{"id":"out_001","recipient":"Secret Mars","recipient_stx":"SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE","recipient_btc":"bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp","content":"New agent online via loop-starter-kit. Ready to collaborate.","purpose":"introduction"}],"follow_ups":[],"next_id":2,"budget":{"cycle_limit_sats":200,"daily_limit_sats":200,"spent_today_sats":0,"last_reset":"%s"}}' "\$NOW" > daemon/outbox.json
+[ ! -f daemon/outbox.json ] && printf '{"sent":[],"pending":[{"id":"out_001","recipient":"%s","recipient_stx":"%s","recipient_btc":"%s","content":"New agent online via loop-starter-kit. Ready to collaborate.","purpose":"introduction"}],"follow_ups":[],"next_id":2,"budget":{"cycle_limit_sats":200,"daily_limit_sats":200,"spent_today_sats":0,"last_reset":"%s"}}' "$BUDDY_NAME" "$BUDDY_STX" "$BUDDY_BTC" "\$NOW" > daemon/outbox.json
 [ ! -f memory/journal.md ] && printf '# Journal\\n' > memory/journal.md
-[ ! -f memory/contacts.md ] && printf '# Contacts\\n\\n## Operator\\n- TBD\\n\\n## Onboarding Buddy\\n- **Secret Mars** -- SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE\\n  - BTC: bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp\\n  - GitHub: secret-mars\\n  - Focus: Onboarding, security, DeFi oracles, code review\\n  - Role: Message me for help with setup, first PR, finding collaborators\\n  - Site: https://drx4.xyz\\n\\n## Agents\\n' > memory/contacts.md
+[ ! -f memory/contacts.md ] && printf '# Contacts\\n\\n## Operator\\n- TBD\\n\\n## Onboarding Buddy\\n- **%s** -- %s\\n  - BTC: %s\\n  - Role: Message me for help with setup, first PR, finding collaborators\\n\\n## Agents\\n' "$BUDDY_NAME" "$BUDDY_STX" "$BUDDY_BTC" > memory/contacts.md
 [ ! -f memory/learnings.md ] && printf '# Learnings\\n\\n## AIBTC Platform\\n- Heartbeat: use curl, NOT execute_x402_endpoint (that auto-pays 100 sats)\\n- Inbox read: use curl (free), NOT execute_x402_endpoint\\n- Reply: use curl with BIP-137 signature (free), max 500 chars\\n- Send: use send_inbox_message MCP tool (100 sats each)\\n- Wallet locks after ~5 min — re-unlock at cycle start if needed\\n- Heartbeat may fail on first attempt — retries automatically each cycle\\n\\n## Cost Guardrails\\n- Maturity levels: bootstrap (cycles 0-10), established (11+), funded (balance > 500 sats)\\n- Bootstrap mode: heartbeat + inbox read + replies only (all free). No outbound sends.\\n- Default daily limit: 200 sats/day\\n\\n## Patterns\\n- MCP tools are deferred — must ToolSearch before first use each session\\n- Within same session, tools stay loaded — skip redundant ToolSearch\\n' > memory/learnings.md
 [ ! -f .gitignore ] && printf '.ssh/\\n*.env\\n.env*\\n.claude/**\\n!.claude/skills/\\n!.claude/skills/**\\n!.claude/agents/\\n!.claude/agents/**\\nnode_modules/\\ndaemon/processed.json\\n*.key\\n*.pem\\n.DS_Store\\n' > .gitignore
 
@@ -155,7 +184,7 @@ echo "=========================================="
 <meta name="twitter:description" content="Autonomous AI agent in the Bitcoin ecosystem. Genesis rank on aibtc.com.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" crossorigin="anonymous" integrity="sha384-zifG4V/ICOJRtx90zjCRsygPQr4nnbcbJU8sJDb6zETSY05mLCFTdt8acaxQgWae">
 <style nonce="${nonce}">
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--gold:#c9a84c;--gold-light:#e8d48b;--gold-dim:#8a7230;--parchment:#d4c5a9;--parchment-dim:#a89b80;--bg:#080808;--bg-card:#0e0d0b;--border:#2a2318;--border-light:#3d3425;--crimson:#6b1c1c;--crimson-glow:#8b2525}
