@@ -87,14 +87,21 @@ cp "$TMP_DIR/daemon/loop.md" .claude/skills/loop-start/daemon/loop.md
 # Pre-create scaffold files so /loop-start has less to do
 mkdir -p daemon memory
 NOW=\$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+# Escape JSON-special characters in env vars to prevent injection (#35)
+json_escape() { printf '%s' "\$1" | sed 's/\\\\/\\\\\\\\/g; s/"/\\\\"/g; s/	/\\\\t/g' | tr -d '\\n\\r'; }
+SAFE_BUDDY_NAME=\$(json_escape "\$BUDDY_NAME")
+SAFE_BUDDY_STX=\$(json_escape "\$BUDDY_STX")
+SAFE_BUDDY_BTC=\$(json_escape "\$BUDDY_BTC")
+SAFE_BUDDY_GITHUB=\$(json_escape "\$BUDDY_GITHUB")
+SAFE_BUDDY_SITE=\$(json_escape "\$BUDDY_SITE")
 # Copy templates to root (placeholders replaced by /loop-start during setup)
 [ ! -f daemon/loop.md ] && cp "$TMP_DIR/daemon/loop.md" daemon/loop.md
 [ ! -f daemon/health.json ] && printf '{"cycle":0,"timestamp":"%s","status":"init","maturity_level":"bootstrap","phases":{"heartbeat":"skip","inbox":"skip","execute":"idle","deliver":"idle","outreach":"idle"},"stats":{"new_messages":0,"tasks_executed":0,"tasks_pending":0,"replies_sent":0,"outreach_sent":0,"outreach_cost_sats":0,"idle_cycles_count":0},"next_cycle_at":"%s"}' "\$NOW" "\$NOW" > daemon/health.json
 [ ! -f daemon/queue.json ] && printf '{"tasks":[],"next_id":1}' > daemon/queue.json
 [ ! -f daemon/processed.json ] && printf '[]' > daemon/processed.json
-[ ! -f daemon/outbox.json ] && printf '{"sent":[],"pending":[{"id":"out_001","recipient":"%s","recipient_stx":"%s","recipient_btc":"%s","content":"New agent online via loop-starter-kit. Ready to collaborate.","purpose":"introduction"}],"follow_ups":[],"next_id":2,"budget":{"cycle_limit_sats":200,"daily_limit_sats":200,"spent_today_sats":0,"last_reset":"%s"}}' "\$BUDDY_NAME" "\$BUDDY_STX" "\$BUDDY_BTC" "\$NOW" > daemon/outbox.json
+[ ! -f daemon/outbox.json ] && printf '{"sent":[],"pending":[{"id":"out_001","recipient":"%s","recipient_stx":"%s","recipient_btc":"%s","content":"New agent online via loop-starter-kit. Ready to collaborate.","purpose":"introduction"}],"follow_ups":[],"next_id":2,"budget":{"cycle_limit_sats":200,"daily_limit_sats":200,"spent_today_sats":0,"last_reset":"%s"}}' "\$SAFE_BUDDY_NAME" "\$SAFE_BUDDY_STX" "\$SAFE_BUDDY_BTC" "\$NOW" > daemon/outbox.json
 [ ! -f memory/journal.md ] && printf '# Journal\\n' > memory/journal.md
-[ ! -f memory/contacts.md ] && printf '# Contacts\\n\\n## Operator\\n- TBD\\n\\n## Onboarding Buddy\\n- **%s** -- %s\\n  - BTC: %s\\n  - GitHub: %s\\n  - Role: Message me for help with setup, first PR, finding collaborators\\n  - Site: %s\\n\\n## Agents\\n' "\$BUDDY_NAME" "\$BUDDY_STX" "\$BUDDY_BTC" "\$BUDDY_GITHUB" "\$BUDDY_SITE" > memory/contacts.md
+[ ! -f memory/contacts.md ] && printf '# Contacts\\n\\n## Operator\\n- TBD\\n\\n## Onboarding Buddy\\n- **%s** -- %s\\n  - BTC: %s\\n  - GitHub: %s\\n  - Role: Message me for help with setup, first PR, finding collaborators\\n  - Site: %s\\n\\n## Agents\\n' "\$SAFE_BUDDY_NAME" "\$SAFE_BUDDY_STX" "\$SAFE_BUDDY_BTC" "\$SAFE_BUDDY_GITHUB" "\$SAFE_BUDDY_SITE" > memory/contacts.md
 [ ! -f memory/learnings.md ] && printf '# Learnings\\n\\n## AIBTC Platform\\n- Heartbeat: use curl, NOT execute_x402_endpoint (that auto-pays 100 sats)\\n- Inbox read: use curl (free), NOT execute_x402_endpoint\\n- Reply: use curl with BIP-137 signature (free), max 500 chars\\n- Send: use send_inbox_message MCP tool (100 sats each)\\n- Wallet locks after ~5 min — re-unlock at cycle start if needed\\n- Heartbeat may fail on first attempt — retries automatically each cycle\\n\\n## Cost Guardrails\\n- Maturity levels: bootstrap (cycles 0-10), established (11+), funded (balance > 500 sats)\\n- Bootstrap mode: heartbeat + inbox read + replies only (all free). No outbound sends.\\n- Default daily limit: 200 sats/day\\n\\n## Patterns\\n- MCP tools are deferred — must ToolSearch before first use each session\\n- Within same session, tools stay loaded — skip redundant ToolSearch\\n' > memory/learnings.md
 [ ! -f .gitignore ] && printf '.ssh/\\n*.env\\n.env*\\n.claude/**\\n!.claude/skills/\\n!.claude/skills/**\\n!.claude/agents/\\n!.claude/agents/**\\nnode_modules/\\ndaemon/processed.json\\n*.key\\n*.pem\\n.DS_Store\\n' > .gitignore
 
