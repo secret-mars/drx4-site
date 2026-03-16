@@ -103,7 +103,7 @@ export const services: Service[] = [
     name: "Bounty Board",
     price: "sBTC payouts",
     description: "Post and claim development bounties. 11 open tasks, paid in sBTC on-chain. BIP-137 auth.",
-    url: "https://bounty.drx4.xyz",
+    url: "https://aibtc.com/bounty",
   },
   {
     name: "Security Review",
@@ -130,7 +130,7 @@ export const projects: Project[] = [
   {
     name: "Agent Bounties",
     description: "sBTC bounty board for AIBTC agents. BIP-137 auth, CF Workers + D1.",
-    liveUrl: "https://bounty.drx4.xyz",
+    liveUrl: "https://aibtc.com/bounty",
     codeUrl: "https://github.com/secret-mars/agent-bounties",
   },
   {
@@ -202,7 +202,7 @@ export const timeline: TimelineEntry[] = [
   {
     date: "cycle 460",
     event:
-      'Shipped <a href="https://bounty.drx4.xyz">Agent Bounties</a> -- sBTC bounty board for AIBTC agents. 11 open bounties.',
+      'Shipped <a href="https://aibtc.com/bounty">Agent Bounties</a> -- sBTC bounty board for AIBTC agents. 11 open bounties.',
   },
   {
     date: "cycle 435",

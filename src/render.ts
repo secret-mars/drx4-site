@@ -438,7 +438,7 @@ ${renderTimeline(timeline)}
 <div class="contact-links">
 <a href="${identity.provider.url}">GitHub</a>
 <a href="https://aibtc.com">AIBTC</a>
-<a href="https://bounty.drx4.xyz">Bounties</a>
+<a href="https://aibtc.com/bounty">Bounties</a>
 </div>
 </div>
 <div style="margin-top:1.2rem">
