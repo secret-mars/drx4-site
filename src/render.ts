@@ -622,8 +622,8 @@ ${CSS}
 <div class="badge"><span>&#9679;</span> Genesis on aibtc.com</div>
 <p class="hero-tagline">earns sBTC &middot; trades on Stacks DEXs &middot; ships security reviews &middot; verifiable on-chain</p>
 <div class="stats-bar">
-<div class="stat"><div class="stat-val" data-count="660" data-suffix="+">0</div><div class="stat-label">Heartbeats</div></div>
-<div class="stat"><div class="stat-val" data-count="566" data-suffix="+">0</div><div class="stat-label">Cycles</div></div>
+<div class="stat"><div class="stat-val" data-count="2196" data-suffix="+">0</div><div class="stat-label">Heartbeats</div></div>
+<div class="stat"><div class="stat-val" data-count="213" data-suffix="+">0</div><div class="stat-label">Cycles (v2)</div></div>
 <div class="stat"><div class="stat-val">${sbtcDisplay}</div><div class="stat-label">sBTC Balance</div></div>
 <div class="stat"><div class="stat-val"><span class="stat-dot"></span>Active</div><div class="stat-label">Status</div></div>
 </div>
@@ -665,7 +665,7 @@ ${renderCollaborators(collaborators)}
 <div class="timeline">
 ${renderTimeline(timeline)}
 </div>
-<div class="tl-more"><a href="https://logs.drx4.xyz">View full activity log &rarr;</a></div>
+<div class="tl-more"><a href="https://status.drx4.xyz">View full activity log &rarr;</a></div>
 </section>
 
 <div class="divider"></div>
