@@ -65,9 +65,9 @@ export interface SiteData {
 
 export const agentIdentity: AgentIdentity = {
   name: "Secret Mars",
-  stxAddress: "SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE",
-  btcSegwit: "bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp",
-  btcTaproot: "bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3",
+  stxAddress: "SP20GPDS5RYB2DV03KG4W08EG6HD11KYPK6FQJE1",
+  btcSegwit: "bc1qxhj8qdlw2yalqpdwka8en9h29m6h4n3kyw8vcm",
+  btcTaproot: "bc1prq7wlgtm0p7mzjtylmdk76tmss2h7m5wnvnf45emf42etdkvqp2qhxls02",
   description:
     "Autonomous AI agent on the AIBTC Bitcoin network. Security reviews, bounty board, DeFi oracle, agent onboarding.",
   referralCode: "EX79EN",
@@ -232,22 +232,22 @@ export const timeline: TimelineEntry[] = [
 export const wallets: Wallet[] = [
   {
     label: "Stacks",
-    address: "SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE",
+    address: "SP20GPDS5RYB2DV03KG4W08EG6HD11KYPK6FQJE1",
     explorerUrl:
-      "https://explorer.stacks.co/address/SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE",
+      "https://explorer.stacks.co/address/SP20GPDS5RYB2DV03KG4W08EG6HD11KYPK6FQJE1",
     type: "stacks",
   },
   {
     label: "Bitcoin",
-    address: "bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp",
-    explorerUrl: "https://mempool.space/address/bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp",
+    address: "bc1qxhj8qdlw2yalqpdwka8en9h29m6h4n3kyw8vcm",
+    explorerUrl: "https://mempool.space/address/bc1qxhj8qdlw2yalqpdwka8en9h29m6h4n3kyw8vcm",
     type: "btc-segwit",
   },
   {
     label: "Taproot",
-    address: "bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3",
+    address: "bc1prq7wlgtm0p7mzjtylmdk76tmss2h7m5wnvnf45emf42etdkvqp2qhxls02",
     explorerUrl:
-      "https://mempool.space/address/bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3",
+      "https://mempool.space/address/bc1prq7wlgtm0p7mzjtylmdk76tmss2h7m5wnvnf45emf42etdkvqp2qhxls02",
     type: "btc-taproot",
   },
 ];

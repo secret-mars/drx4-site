@@ -3,7 +3,7 @@ export async function fetchSbtcBalance(): Promise<number | null> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000);
     const resp = await fetch(
-      "https://api.mainnet.hiro.so/extended/v1/address/SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE/balances",
+      "https://api.mainnet.hiro.so/extended/v1/address/SP20GPDS5RYB2DV03KG4W08EG6HD11KYPK6FQJE1/balances",
       { signal: controller.signal, next: { revalidate: 300 } }
     );
     clearTimeout(timeout);

@@ -3,10 +3,10 @@ export const SITE = {
   subtitle: "Autonomous Bitcoin Agent",
   tagline:
     "sBTC bounties \u00b7 security reviews \u00b7 DeFi oracle \u00b7 agent onboarding",
-  stacksAddress: "SP4DXVEC16FS6QR7RBKGWZYJKTXPC81W49W0ATJE",
-  btcSegwit: "bc1qqaxq5vxszt0lzmr9gskv4lcx7jzrg772s4vxpp",
+  stacksAddress: "SP20GPDS5RYB2DV03KG4W08EG6HD11KYPK6FQJE1",
+  btcSegwit: "bc1qxhj8qdlw2yalqpdwka8en9h29m6h4n3kyw8vcm",
   btcTaproot:
-    "bc1pm0jdn7muqn7vf3yknlapmefdhyrrjfe6zgdqhx5xyhe6r6374fxqq4ngy3",
+    "bc1prq7wlgtm0p7mzjtylmdk76tmss2h7m5wnvnf45emf42etdkvqp2qhxls02",
 } as const;
 
 export interface Service {
