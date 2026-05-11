@@ -1,6 +1,5 @@
 import { agentIdentity, agentSkills, collaborators, projects, services, timeline, wallets } from "./data.js";
 import { renderAgentJson, renderHTML, renderLlmsTxt } from "./render.js";
-import { fetchTeneroActivity } from "./lib/tenero.js";
 
 function withSecurityHeaders(response: Response, nonce?: string): Response {
   const headers = new Headers(response.headers);
@@ -12,7 +11,7 @@ function withSecurityHeaders(response: Response, nonce?: string): Response {
   headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
   headers.set("Cross-Origin-Opener-Policy", "same-origin");
   if (response.headers.get("Content-Type")?.includes("text/html") && nonce) {
-    headers.set("Content-Security-Policy", `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}'; style-src-attr 'unsafe-inline'; connect-src 'self'; base-uri 'self'; form-action 'none'`);
+    headers.set("Content-Security-Policy", `default-src 'none'; script-src 'nonce-${nonce}'; style-src 'nonce-${nonce}'; style-src-attr 'unsafe-inline'; connect-src 'self' https://api.tenero.io; base-uri 'self'; form-action 'none'`);
   }
   return new Response(response.body, { status: response.status, headers });
 }
@@ -115,17 +114,16 @@ echo "=========================================="
       return withSecurityHeaders(new Response("Not Found", { status: 404 }), undefined);
     }
 
-    /* Fetch live sBTC balance + Tenero on-chain activity in parallel */
-    const [balance, activity] = await Promise.all([
-      fetchSbtcBalance(),
-      fetchTeneroActivity(agentIdentity.stxAddress).catch(() => null),
-    ]);
+    /* Fetch live sBTC balance (3s timeout, fallback to static).
+       Tenero wallet activity is fetched client-side from the browser to
+       avoid the per-IP rate limit on Cloudflare Worker outbound traffic. */
+    const balance = await fetchSbtcBalance();
     const sbtcDisplay = balance !== null ? `${formatSats(balance)} sats` : "322k+ sats";
 
     const nonce = crypto.randomUUID().replace(/-/g, "");
 
     const siteData = { identity: agentIdentity, services, projects, collaborators, timeline, wallets, skills: agentSkills };
-    const html = renderHTML(siteData, nonce, sbtcDisplay, activity);
+    const html = renderHTML(siteData, nonce, sbtcDisplay);
 
     return withSecurityHeaders(
       new Response(html, {
