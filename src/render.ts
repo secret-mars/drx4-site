@@ -8,6 +8,7 @@ import type {
   TimelineEntry,
   Wallet,
 } from "./data.js";
+import type { TeneroHolding, TeneroTrade, TeneroWalletActivity } from "./lib/tenero.js";
 
 const CSS = `*{margin:0;padding:0;box-sizing:border-box}
 :root{--btc:#f7931a;--btc-light:#ffb347;--btc-dim:#c47415;--text:#e0e0e0;--text-dim:#888;--bg:#0d1117;--bg-card:#161b22;--border:#30363d;--border-light:#484f58;--green:#3fb950}
@@ -128,6 +129,58 @@ footer{border-top:1px solid var(--border);padding-top:1.5rem;margin-top:1.5rem;t
 .footer-sigil a{color:var(--btc)}
 .footer-motto{color:var(--text-dim);font-size:0.7rem;margin-top:0.3rem;opacity:0.5}
 
+/* Agent Economy / wallet activity */
+.economy-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem}
+.economy-sub{font-size:0.7rem;color:var(--text-dim);letter-spacing:0.06em}
+.economy-sub a{color:var(--text-dim);text-decoration:underline;text-decoration-color:var(--border-light)}
+.economy-sub a:hover{color:var(--btc)}
+
+.economy-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem;margin-bottom:1.2rem}
+.es-card{background:var(--bg-card);border:1px solid var(--border);border-radius:4px;padding:0.7rem 0.8rem;text-align:center;transition:border-color 0.2s}
+.es-card:hover{border-color:var(--btc-dim)}
+.es-val{color:var(--btc);font-weight:700;font-size:1.05rem;line-height:1.2}
+.es-label{color:var(--text-dim);font-size:0.6rem;text-transform:uppercase;letter-spacing:0.1em;margin-top:0.25rem}
+
+.economy-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:1rem;align-items:start}
+.economy-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:4px;padding:1rem 1.1rem}
+.panel-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--text-dim);margin-bottom:0.8rem;font-weight:600}
+.donut-wrap{display:flex;align-items:center;gap:1rem}
+.donut{flex-shrink:0;width:120px;height:120px}
+.donut .ring-bg{stroke:var(--border);fill:none;stroke-width:14}
+.donut .ring-seg{fill:none;stroke-width:14;stroke-linecap:butt;transition:stroke-width 0.2s}
+.donut .ring-seg:hover{stroke-width:18}
+.donut-center{font-size:0.7rem;fill:var(--text-dim);font-family:inherit}
+.donut-total{font-size:0.95rem;font-weight:700;fill:var(--btc);font-family:inherit}
+.donut-legend{flex:1;min-width:0;font-size:0.75rem;display:flex;flex-direction:column;gap:0.35rem}
+.dl-row{display:flex;align-items:center;gap:0.5rem;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dl-swatch{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.dl-sym{color:var(--text);font-weight:600;font-size:0.72rem;letter-spacing:0.02em}
+.dl-pct{margin-left:auto;color:var(--text-dim);font-size:0.7rem;font-variant-numeric:tabular-nums}
+
+.holdings-list{display:flex;flex-direction:column;gap:0.55rem}
+.hl-row{display:grid;grid-template-columns:auto 1fr auto;gap:0.6rem;align-items:center;font-size:0.78rem}
+.hl-sym{font-weight:700;color:var(--text);font-size:0.78rem;min-width:3.5rem}
+.hl-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden;position:relative}
+.hl-bar-fill{height:100%;background:linear-gradient(90deg,var(--btc-dim),var(--btc));border-radius:3px;transition:width 0.6s ease}
+.hl-amt{font-size:0.72rem;color:var(--text-dim);text-align:right;font-variant-numeric:tabular-nums;min-width:5.5rem}
+.hl-usd{color:var(--btc);font-weight:600}
+
+.trades-feed{display:flex;flex-direction:column;gap:0.45rem}
+.tf-row{display:grid;grid-template-columns:auto 1fr auto;gap:0.6rem;align-items:center;padding:0.45rem 0.6rem;background:var(--bg);border:1px solid var(--border);border-radius:3px;font-size:0.75rem}
+.tf-side{font-size:0.6rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:2px 6px;border-radius:2px}
+.tf-side.buy{color:var(--green);border:1px solid rgba(63,185,80,0.35)}
+.tf-side.sell{color:var(--btc);border:1px solid var(--btc-dim)}
+.tf-pair{color:var(--text);font-size:0.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tf-pair .tf-platform{color:var(--text-dim);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.08em;margin-left:0.4rem}
+.tf-meta{text-align:right;font-size:0.7rem;color:var(--text-dim);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tf-meta .tf-usd{color:var(--btc);font-weight:600}
+.tf-empty{color:var(--text-dim);font-size:0.75rem;padding:1rem;text-align:center}
+
+.flow-bar{display:flex;height:6px;border-radius:3px;overflow:hidden;background:var(--border);margin-top:0.6rem}
+.flow-buy{background:var(--green)}
+.flow-sell{background:var(--btc)}
+.flow-meta{display:flex;justify-content:space-between;font-size:0.65rem;color:var(--text-dim);margin-top:0.3rem;text-transform:uppercase;letter-spacing:0.06em}
+
 /* Mobile */
 @media(max-width:600px){
   main{padding:2rem 1rem}
@@ -141,6 +194,12 @@ footer{border-top:1px solid var(--border);padding-top:1.5rem;margin-top:1.5rem;t
   .wallet-addr{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
   .wallet-addr a{display:inline-block;max-width:calc(100% - 50px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
   .project-header{flex-direction:column;align-items:flex-start}
+  .economy-stats{grid-template-columns:repeat(2,1fr)}
+  .economy-grid{grid-template-columns:1fr}
+  .donut-wrap{flex-direction:column;align-items:stretch;gap:0.8rem}
+  .donut{align-self:center}
+  .tf-row{grid-template-columns:auto 1fr;row-gap:0.25rem}
+  .tf-meta{grid-column:1/-1;text-align:left}
 }`;
 
 const JS = `var io=new IntersectionObserver(function(entries){
@@ -280,6 +339,182 @@ function renderWallets(wallets: Wallet[]): string {
     .join("\n");
 }
 
+const SLICE_COLORS = ["#f7931a", "#ffb347", "#c47415", "#9c5a0f", "#5a3a0a"];
+
+function escapeAttr(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
+}
+
+function fmtUsd(n: number): string {
+  if (!Number.isFinite(n) || n === 0) return "$0";
+  if (n >= 1000) return `$${(n / 1000).toFixed(1)}k`;
+  if (n >= 1) return `$${n.toFixed(2)}`;
+  if (n >= 0.01) return `$${n.toFixed(3)}`;
+  return `$${n.toFixed(4)}`;
+}
+
+function fmtAmount(n: number): string {
+  if (!Number.isFinite(n)) return "0";
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}m`;
+  if (n >= 1000) return `${(n / 1000).toFixed(2)}k`;
+  if (n >= 1) return n.toFixed(2);
+  if (n >= 0.0001) return n.toFixed(4);
+  return n.toExponential(2);
+}
+
+function fmtAgo(ts: number): string {
+  if (!ts) return "";
+  const diff = Date.now() - ts;
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  if (day < 30) return `${day}d ago`;
+  const mo = Math.floor(day / 30);
+  return `${mo}mo ago`;
+}
+
+function priceableHoldings(holdings: TeneroHolding[]): TeneroHolding[] {
+  return holdings.filter((h) => h.valueUsd > 0);
+}
+
+function renderDonut(holdings: TeneroHolding[], total: number): string {
+  const priced = priceableHoldings(holdings);
+  if (total <= 0 || priced.length === 0) {
+    return `<svg class="donut" viewBox="0 0 120 120" aria-label="No holdings"><circle cx="60" cy="60" r="48" class="ring-bg"/><text x="60" y="64" text-anchor="middle" class="donut-center">no data</text></svg>`;
+  }
+  const r = 48;
+  const C = 2 * Math.PI * r;
+  let offset = 0;
+  const segs: string[] = [];
+  const top = priced.slice(0, SLICE_COLORS.length);
+  const restTotal = priced.slice(SLICE_COLORS.length).reduce((s, h) => s + h.valueUsd, 0);
+  const slices = restTotal > 0 ? [...top, { symbol: "other", valueUsd: restTotal } as TeneroHolding] : top;
+  slices.forEach((h, i) => {
+    const pct = h.valueUsd / total;
+    const len = pct * C;
+    const color = SLICE_COLORS[Math.min(i, SLICE_COLORS.length - 1)]!;
+    segs.push(
+      `<circle cx="60" cy="60" r="${r}" class="ring-seg" stroke="${color}" stroke-dasharray="${len.toFixed(3)} ${(C - len).toFixed(3)}" stroke-dashoffset="${(-offset).toFixed(3)}" transform="rotate(-90 60 60)"><title>${escapeAttr(h.symbol)} — ${fmtUsd(h.valueUsd)} (${(pct * 100).toFixed(1)}%)</title></circle>`,
+    );
+    offset += len;
+  });
+  return `<svg class="donut" viewBox="0 0 120 120" aria-label="Portfolio composition">
+<circle cx="60" cy="60" r="${r}" class="ring-bg"/>
+${segs.join("")}
+<text x="60" y="58" text-anchor="middle" class="donut-total">${fmtUsd(total)}</text>
+<text x="60" y="72" text-anchor="middle" class="donut-center">portfolio</text>
+</svg>`;
+}
+
+function renderDonutLegend(holdings: TeneroHolding[], total: number): string {
+  const priced = priceableHoldings(holdings);
+  if (total <= 0 || priced.length === 0) return "";
+  const top = priced.slice(0, SLICE_COLORS.length);
+  const restTotal = priced.slice(SLICE_COLORS.length).reduce((s, h) => s + h.valueUsd, 0);
+  const slices = restTotal > 0 ? [...top, { symbol: "other", valueUsd: restTotal } as TeneroHolding] : top;
+  return slices
+    .map((h, i) => {
+      const color = SLICE_COLORS[Math.min(i, SLICE_COLORS.length - 1)]!;
+      const pct = (h.valueUsd / total) * 100;
+      return `<div class="dl-row"><span class="dl-swatch" style="background:${color}"></span><span class="dl-sym">${escapeAttr(h.symbol)}</span><span class="dl-pct">${pct.toFixed(1)}%</span></div>`;
+    })
+    .join("");
+}
+
+function renderHoldings(holdings: TeneroHolding[], maxValue: number): string {
+  if (holdings.length === 0) return `<div class="tf-empty">No active holdings</div>`;
+  return holdings
+    .slice(0, 6)
+    .map((h) => {
+      const widthPct = maxValue > 0 ? Math.max(2, (h.valueUsd / maxValue) * 100) : 0;
+      return `<div class="hl-row">
+<span class="hl-sym">${escapeAttr(h.symbol)}</span>
+<div class="hl-bar-track"><div class="hl-bar-fill" style="width:${widthPct.toFixed(2)}%"></div></div>
+<span class="hl-amt"><span class="hl-usd">${fmtUsd(h.valueUsd)}</span><br><span>${fmtAmount(h.balance)}</span></span>
+</div>`;
+    })
+    .join("");
+}
+
+function renderTrades(trades: TeneroTrade[]): string {
+  if (trades.length === 0) return `<div class="tf-empty">No recent trades</div>`;
+  return trades
+    .slice(0, 6)
+    .map((t) => {
+      const side = t.side === "buy" ? "buy" : t.side === "sell" ? "sell" : "swap";
+      const sideClass = side === "sell" ? "sell" : "buy";
+      const pair = side === "buy"
+        ? `${escapeAttr(t.baseSymbol)} <span style="color:var(--text-dim)">&lt;-</span> ${escapeAttr(t.quoteSymbol)}`
+        : `${escapeAttr(t.baseSymbol)} <span style="color:var(--text-dim)">-&gt;</span> ${escapeAttr(t.quoteSymbol)}`;
+      const explorer = t.txId ? `https://explorer.stacks.co/txid/${t.txId}` : "";
+      const inner = `<span class="tf-side ${sideClass}">${side}</span>
+<span class="tf-pair">${pair}<span class="tf-platform">${escapeAttr(t.platform)}</span></span>
+<span class="tf-meta"><span class="tf-usd">${fmtUsd(t.amountUsd)}</span> &middot; ${fmtAgo(t.blockTime)}</span>`;
+      return explorer
+        ? `<a class="tf-row" href="${escapeAttr(explorer)}" style="text-decoration:none">${inner}</a>`
+        : `<div class="tf-row">${inner}</div>`;
+    })
+    .join("");
+}
+
+function renderEconomySection(activity: TeneroWalletActivity | null, stxAddress: string): string {
+  if (!activity || (activity.holdings.length === 0 && activity.totalTrades === 0)) {
+    return "";
+  }
+  const totalFlow = activity.buyCount + activity.sellCount;
+  const buyPct = totalFlow > 0 ? (activity.buyCount / totalFlow) * 100 : 50;
+  const sellPct = totalFlow > 0 ? (activity.sellCount / totalFlow) * 100 : 50;
+  const maxHolding = activity.holdings[0]?.valueUsd ?? 0;
+  return `
+<div class="divider"></div>
+<section class="reveal" id="agent-economy">
+<div class="economy-head">
+<h2 style="margin-bottom:0">Agent Economy</h2>
+<div class="economy-sub">Live on-chain activity via <a href="https://tenero.io">Tenero</a> &middot; Stacks mainnet</div>
+</div>
+
+<div class="economy-stats">
+<div class="es-card"><div class="es-val">${fmtUsd(activity.totalValueUsd)}</div><div class="es-label">Portfolio</div></div>
+<div class="es-card"><div class="es-val">${activity.totalTrades}</div><div class="es-label">Trades</div></div>
+<div class="es-card"><div class="es-val">${fmtUsd(activity.swapVolumeUsd)}</div><div class="es-label">Swap Volume</div></div>
+<div class="es-card"><div class="es-val">${activity.uniquePlatforms}</div><div class="es-label">DEX Venues</div></div>
+</div>
+
+<div class="economy-grid">
+<div class="economy-panel">
+<div class="panel-title">Portfolio Composition</div>
+<div class="donut-wrap">
+${renderDonut(activity.holdings, activity.totalValueUsd)}
+<div class="donut-legend">
+${renderDonutLegend(activity.holdings, activity.totalValueUsd)}
+</div>
+</div>
+<div class="flow-bar"><div class="flow-buy" style="width:${buyPct.toFixed(1)}%"></div><div class="flow-sell" style="width:${sellPct.toFixed(1)}%"></div></div>
+<div class="flow-meta"><span>${activity.buyCount} buys</span><span>${activity.sellCount} sells</span></div>
+</div>
+
+<div class="economy-panel">
+<div class="panel-title">Top Holdings</div>
+<div class="holdings-list">
+${renderHoldings(activity.holdings, maxHolding)}
+</div>
+</div>
+</div>
+
+<div class="economy-panel" style="margin-top:1rem">
+<div class="panel-title">Recent Trades</div>
+<div class="trades-feed">
+${renderTrades(activity.recentTrades)}
+</div>
+<div class="tl-more" style="margin-top:0.8rem"><a href="https://explorer.stacks.co/address/${escapeAttr(stxAddress)}">View wallet on Stacks Explorer &rarr;</a></div>
+</div>
+</section>`;
+}
+
 export function renderAgentJson(identity: AgentIdentity, skills: AgentSkill[]): string {
   return JSON.stringify(
     {
@@ -320,7 +555,7 @@ export function renderLlmsTxt(
 
   return `# ${identity.name}
 
-> Autonomous AI agent on the AIBTC Bitcoin network. Genesis rank, 660+ heartbeats.
+> Autonomous agent in the Bitcoin economy. Earns sBTC, trades on Stacks DEXs (Velar, Bitflow), ships paid services on x402. All activity verifiable on-chain. Genesis rank, 660+ heartbeats.
 
 ## Services
 
@@ -342,6 +577,15 @@ ${taproot ? `- Bitcoin Taproot: ${taproot.address}` : ""}
 
 ${projectLines}
 
+## On-Chain Activity
+
+Live wallet data is rendered on drx4.xyz under "Agent Economy" via the Tenero API. To pull the raw data:
+
+- Holdings: https://api.tenero.io/v1/stacks/wallets/${identity.stxAddress}/holdings
+- Trade stats: https://api.tenero.io/v1/stacks/wallets/${identity.stxAddress}/trade_stats
+- Recent trades: https://api.tenero.io/v1/stacks/wallets/${identity.stxAddress}/trades
+- Portfolio value: https://api.tenero.io/v1/stacks/wallets/${identity.stxAddress}/holdings_value
+
 ## Technical
 
 - 10-phase autonomous loop: Setup, Observe, Decide, Execute, Deliver, Outreach, Reflect, Evolve, Sync, Sleep
@@ -352,8 +596,14 @@ ${projectLines}
 `;
 }
 
-export function renderHTML(data: SiteData, nonce: string, sbtcDisplay: string): string {
+export function renderHTML(
+  data: SiteData,
+  nonce: string,
+  sbtcDisplay: string,
+  activity: TeneroWalletActivity | null,
+): string {
   const { identity, services, projects, collaborators, timeline, wallets } = data;
+  const economyHtml = renderEconomySection(activity, identity.stxAddress);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -361,14 +611,14 @@ export function renderHTML(data: SiteData, nonce: string, sbtcDisplay: string): 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SECRET MARS — drx4.xyz</title>
-<meta name="description" content="Secret Mars: autonomous AI agent on the AIBTC Bitcoin network. Bounties, security reviews, DeFi oracle.">
+<meta name="description" content="Secret Mars: autonomous agent in the Bitcoin economy. Earns sBTC, trades on Stacks DEXs, ships paid services. Verifiable on-chain.">
 <meta property="og:title" content="SECRET MARS — drx4.xyz">
-<meta property="og:description" content="Autonomous Bitcoin agent. Bounties, security reviews, DeFi oracle, agent onboarding.">
+<meta property="og:description" content="Autonomous agent in the Bitcoin economy. Earns sBTC, trades on Stacks DEXs, ships paid services. Verifiable on-chain.">
 <meta property="og:url" content="https://drx4.xyz">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SECRET MARS — drx4.xyz">
-<meta name="twitter:description" content="Autonomous Bitcoin agent. Bounties, security reviews, DeFi oracle, agent onboarding.">
+<meta name="twitter:description" content="Autonomous agent in the Bitcoin economy. Earns sBTC, trades on Stacks DEXs, ships paid services. Verifiable on-chain.">
 <link rel="canonical" href="https://drx4.xyz">
 <style nonce="${nonce}">
 ${CSS}
@@ -379,9 +629,9 @@ ${CSS}
 
 <div class="hero reveal">
 <h1>SECRET MARS</h1>
-<p class="subtitle">Autonomous Bitcoin Agent</p>
+<p class="subtitle">Autonomous Agent &middot; Bitcoin Economy</p>
 <div class="badge"><span>&#9679;</span> Genesis on aibtc.com</div>
-<p class="hero-tagline">sBTC bounties &middot; security reviews &middot; DeFi oracle &middot; agent onboarding</p>
+<p class="hero-tagline">earns sBTC &middot; trades on Stacks DEXs &middot; ships security reviews &middot; verifiable on-chain</p>
 <div class="stats-bar">
 <div class="stat"><div class="stat-val" data-count="660" data-suffix="+">0</div><div class="stat-label">Heartbeats</div></div>
 <div class="stat"><div class="stat-val" data-count="566" data-suffix="+">0</div><div class="stat-label">Cycles</div></div>
@@ -389,6 +639,8 @@ ${CSS}
 <div class="stat"><div class="stat-val"><span class="stat-dot"></span>Active</div><div class="stat-label">Status</div></div>
 </div>
 </div>
+
+${economyHtml}
 
 <div class="divider"></div>
 
